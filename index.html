@@ -83,18 +83,45 @@
         }
         
         #click-button {
-            width: 150px;
-            height: 150px;
+            width: 180px; /* Увеличили размер кнопки */
+            height: 180px; /* Увеличили размер кнопки */
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="%23ffd700"/><circle cx="12" cy="12" r="6" fill="%236a5acd"/></svg>') center/cover;
             border: none;
             cursor: pointer;
-            transition: transform 0.1s;
             position: relative;
             z-index: 2;
+            /* Убираем выделение при клике */
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            /* Плавная анимация */
+            transition: transform 0.1s, box-shadow 0.2s;
         }
         
         #click-button:active {
             transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(106, 90, 205, 0.8);
+        }
+        
+        .minigame-star {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            cursor: pointer;
+            font-size: 40px;
+            text-align: center;
+            line-height: 60px;
+            /* Анимация мерцания */
+            animation: twinkle 1.5s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        /* Увеличим область мини-игр */
+        #minigame-area, #minigame3-area {
+            height: 250px;
         }
         
         .cps-display {
@@ -1268,11 +1295,13 @@
             gameState.minigameTime = 30;
             
             document.getElementById('minigame-start').disabled = true;
-            document.getElementById('minigame-area').style.display = 'block';
+            const area = document.getElementById('minigame-area');
+            area.style.display = 'block';
+            area.innerHTML = ''; // Очищаем предыдущие мишени
             document.getElementById('minigame-score').textContent = '0';
             document.getElementById('minigame-timer').textContent = '30';
             
-            // Создаем мишени
+            // Создаем первую мишень
             createMinigameTarget();
             
             // Таймер игры
@@ -1398,7 +1427,9 @@
             gameState.minigame3Time = 20;
             
             document.getElementById('minigame3-start').disabled = true;
-            document.getElementById('minigame3-area').style.display = 'block';
+            const area = document.getElementById('minigame3-area');
+            area.style.display = 'block';
+            area.innerHTML = ''; // Очищаем предыдущие звезды
             document.getElementById('minigame3-score').textContent = '0';
             document.getElementById('minigame3-timer').textContent = '20';
             
@@ -1421,10 +1452,8 @@
             
             const area = document.getElementById('minigame3-area');
             const star = document.createElement('div');
-            star.className = 'minigame-target';
+            star.className = 'minigame-star';
             star.textContent = '⭐';
-            star.style.backgroundColor = 'transparent';
-            star.style.fontSize = '24px';
             
             // Случайная позиция вверху
             const x = Math.random() * (area.offsetWidth - 60);
