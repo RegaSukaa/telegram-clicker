@@ -282,7 +282,7 @@
             100% { transform: translate(0, -150px) scale(2.5); opacity: 0; }
         }
         
-        .minigame-container {
+        .minigame-content {
             text-align: center;
             padding: 20px;
         }
@@ -543,7 +543,7 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
         
-        .minigame-container {
+        .minigame-wrapper {
             display: none;
             padding: 15px;
             background: rgba(0, 0, 0, 0.3);
@@ -551,7 +551,7 @@
             margin-top: 10px;
         }
         
-        .minigame-container.active {
+        .minigame-wrapper.active {
             display: block;
             animation: fadeIn 0.5s;
         }
@@ -760,14 +760,14 @@
         </div>
         
         <div id="minigame" class="tab-content">
-            <div class="minigame-container">
+            <div class="minigame-wrapper active">
                 <div class="minigame-selector">
                     <button class="minigame-btn active" data-minigame="1">УДАР ПО МИШЕНИ</button>
                     <button class="minigame-btn" data-minigame="2">БЫСТРЫЕ КЛИКИ</button>
                     <button class="minigame-btn" data-minigame="3">ПАДАЮЩИЕ ЗВЕЗДЫ</button>
                 </div>
                 
-                <div id="minigame1" class="minigame-container active">
+                <div id="minigame1" class="minigame-content active">
                     <div class="minigame-header">
                         <h3>УДАРЬ ПО МИШЕНИ!</h3>
                         <div class="minigame-stats">
@@ -782,7 +782,7 @@
                     </div>
                 </div>
                 
-                <div id="minigame2" class="minigame-container">
+                <div id="minigame2" class="minigame-content">
                     <div class="minigame-header">
                         <h3>БЫСТРЫЕ КЛИКИ!</h3>
                         <div class="minigame-stats">
@@ -799,7 +799,7 @@
                     </div>
                 </div>
                 
-                <div id="minigame3" class="minigame-container">
+                <div id="minigame3" class="minigame-content">
                     <div class="minigame-header">
                         <h3>ПАДАЮЩИЕ ЗВЕЗДЫ!</h3>
                         <div class="minigame-stats">
@@ -2118,7 +2118,7 @@
                     this.classList.add('active');
                     
                     // Показываем выбранную мини-игру
-                    document.querySelectorAll('.minigame-container').forEach(container => {
+                    document.querySelectorAll('.minigame-content').forEach(container => {
                         container.classList.remove('active');
                     });
                     document.getElementById(`minigame${minigameId}`).classList.add('active');
@@ -2185,7 +2185,91 @@
             document.getElementById('dev-reset').addEventListener('click', function() {
                 if (confirm('Вы уверены, что хотите сбросить весь прогресс?')) {
                     localStorage.removeItem('pixelClickerSave');
-                    location.reload();
+                    // Полный сброс состояния
+                    gameState = {
+                        clicks: 0,
+                        crystals: 0,
+                        prestige: 0,
+                        generatorCPS: 0,
+                        manualCPS: 0,
+                        totalClicks: 0,
+                        totalCrystals: 0,
+                        level: 1,
+                        xp: 0,
+                        nextLevelXp: 100,
+                        generators: [
+                            { id: 1, name: "Помощник", level: 0, baseCPS: 0.1, baseCost: 15, icon: "👨‍💼" },
+                            { id: 2, name: "Ферма", level: 0, baseCPS: 0.5, baseCost: 100, icon: "🌾" },
+                            { id: 3, name: "Фабрика", level: 0, baseCPS: 2, baseCost: 500, icon: "🏭" },
+                            { id: 4, name: "Лаборатория", level: 0, baseCPS: 10, baseCost: 3000, icon: "🔬" },
+                            { id: 5, name: "Квантовый компьютер", level: 0, baseCPS: 50, baseCost: 20000, icon: "💻" },
+                            { id: 6, name: "Ракетный комплекс", level: 0, baseCPS: 200, baseCost: 100000, icon: "🚀" },
+                            { id: 7, name: "Чёрная дыра", level: 0, baseCPS: 1000, baseCost: 1000000, icon: "🕳️" },
+                            { id: 8, name: "Галактическая станция", level: 0, baseCPS: 5000, baseCost: 10000000, icon: "🛸" }
+                        ],
+                        upgrades: [
+                            { id: 1, name: "Улучшенный курсор", description: "+0.1 клика за клик", level: 0, maxLevel: 20, baseCost: 100, effect: 0.1, type: "click" },
+                            { id: 2, name: "Автокликер", description: "+0.01 КВС всем генераторам", level: 0, maxLevel: 10, baseCost: 500, effect: 0.01, type: "cps" },
+                            { id: 3, name: "Золотая рука", description: "Шанс 5% на двойной клик", level: 0, maxLevel: 5, baseCost: 2000, effect: 5, type: "critical" },
+                            { id: 4, name: "Кликовая ферма", description: "+0.1 к базовой силе клика", level: 0, maxLevel: 5, baseCost: 5000, effect: 0.1, type: "baseClick" },
+                            { id: 5, name: "Квантовый клик", description: "Шанс 1% на 100x клик", level: 0, maxLevel: 3, baseCost: 25000, effect: 1, type: "quantum" },
+                            { id: 6, name: "Экономия масштаба", description: "-10% к стоимости генераторов", level: 0, maxLevel: 5, baseCost: 100000, effect: 0.1, type: "costReduction" },
+                            { id: 7, name: "Кристальный магнит", description: "+10% к кристаллам из мини-игр", level: 0, maxLevel: 5, baseCost: 50000, effect: 10, type: "crystalBoost" }
+                        ],
+                        achievements: [
+                            { id: 1, name: "Первый клик", description: "Сделайте 1 клик", icon: "👆", unlocked: false, reward: 10, condition: state => state.totalClicks >= 1 },
+                            { id: 2, name: "Начинающий кликер", description: "Достигните 100 кликов", icon: "🔰", unlocked: false, reward: 50, condition: state => state.totalClicks >= 100 },
+                            { id: 3, name: "Кликер-профи", description: "Достигните 10,000 кликов", icon: "🏆", unlocked: false, reward: 200, condition: state => state.totalClicks >= 10000 },
+                            { id: 4, name: "Мастер престижа", description: "Выполните престиж", icon: "♻️", unlocked: false, reward: 500, condition: state => state.prestige >= 1 },
+                            { id: 5, name: "Быстрые пальцы", description: "Сделайте 10 кликов/сек", icon: "⚡", unlocked: false, reward: 300, condition: state => state.manualCPS >= 10 },
+                            { id: 6, name: "Миллионер", description: "Заработайте 1,000,000 кликов", icon: "💰", unlocked: false, reward: 1000, condition: state => state.clicks >= 1000000 },
+                            { id: 7, name: "Кристальный магнат", description: "Получите 100 кристаллов", icon: "💎", unlocked: false, reward: 500, condition: state => state.crystals >= 100 },
+                            { id: 8, name: "Властелин генераторов", description: "Купите все генераторы", icon: "🏭", unlocked: false, reward: 800, condition: state => state.generators.every(g => g.level > 0) },
+                            { id: 9, name: "Эксперт по улучшениям", description: "Максимально улучшите 5 улучшений", icon: "🔧", unlocked: false, reward: 700, condition: state => state.upgrades.filter(u => u.level >= u.maxLevel).length >= 5 },
+                            { id: 10, name: "Мини-игрок", description: "Заработайте 50 кристаллов в мини-игре", icon: "🎮", unlocked: false, reward: 300, condition: state => state.minigameTotalCrystals >= 50 },
+                            { id: 11, name: "Ежедневный чемпион", description: "Получите награду 30 дней подряд", icon: "📅", unlocked: false, reward: 1000, condition: state => state.rewardStreak >= 30 },
+                            { id: 12, name: "Легенда Pixel Clicker", description: "Достигните 10-го уровня престижа", icon: "🌟", unlocked: false, reward: 5000, condition: state => state.prestige >= 10 },
+                            { id: 13, name: "Звездный охотник", description: "Соберите 50 звезд", icon: "⭐", unlocked: false, reward: 400, condition: state => state.starsCollected >= 50 },
+                            { id: 14, name: "Генераторный магнат", description: "Иметь 100 уровней генераторов", icon: "🏗️", unlocked: false, reward: 800, condition: state => state.generators.reduce((sum, g) => sum + g.level, 0) >= 100 },
+                            { id: 15, name: "Мастер всех мини-игр", description: "Заработать 100 кристаллов в мини-играх", icon: "🎯", unlocked: false, reward: 1000, condition: state => state.minigameTotalCrystals >= 100 }
+                        ],
+                        quests: [
+                            { id: 1, name: "Кликер новичок", description: "Сделайте 100 кликов", reward: 20, progress: 0, target: 100, completed: false },
+                            { id: 2, name: "Покупатель", description: "Купите 5 улучшений", reward: 30, progress: 0, target: 5, completed: false },
+                            { id: 3, name: "Мини-игрок", description: "Заработайте 10 кристаллов в мини-играх", reward: 50, progress: 0, target: 10, completed: false }
+                        ],
+                        lastQuestUpdate: Date.now(),
+                        crystalUpgrades: {
+                            clickMultiplier: 0,
+                            generatorBoost: 0,
+                            superClick: false,
+                            minigameBoost: 0,
+                            prestigeBoost: false,
+                            starBoost: false
+                        },
+                        baseClickPower: 1,
+                        criticalChance: 0,
+                        criticalMultiplier: 2,
+                        quantumChance: 0,
+                        lastReward: 0,
+                        rewardStreak: 0,
+                        minigameActive: false,
+                        minigameScore: 0,
+                        minigameTime: 0,
+                        minigameTotalCrystals: 0,
+                        costReduction: 0,
+                        starsCollected: 0,
+                        minigame2Active: false,
+                        minigame2Score: 0,
+                        minigame2Time: 0,
+                        minigame3Active: false,
+                        minigame3Score: 0,
+                        minigame3Time: 0,
+                        soundEnabled: true
+                    };
+                    
+                    renderGame();
+                    showNotification('Прогресс полностью сброшен!');
                 }
             });
         }
@@ -2214,16 +2298,16 @@
             if (saved) {
                 const loaded = JSON.parse(saved);
                 
-                // Сохраняем только нужные свойства
+                // Сохраняем только нужные свойства с проверкой на существование
                 gameState.clicks = loaded.clicks || 0;
                 gameState.crystals = loaded.crystals || 0;
                 gameState.prestige = loaded.prestige || 0;
-                gameState.generators = loaded.generators || gameState.generators;
-                gameState.upgrades = loaded.upgrades || gameState.upgrades;
-                gameState.achievements = loaded.achievements || gameState.achievements;
-                gameState.quests = loaded.quests || gameState.quests;
+                gameState.generators = loaded.generators || [...gameState.generators];
+                gameState.upgrades = loaded.upgrades || [...gameState.upgrades];
+                gameState.achievements = loaded.achievements || [...gameState.achievements];
+                gameState.quests = loaded.quests || [...gameState.quests];
                 gameState.lastQuestUpdate = loaded.lastQuestUpdate || Date.now();
-                gameState.crystalUpgrades = loaded.crystalUpgrades || gameState.crystalUpgrades;
+                gameState.crystalUpgrades = loaded.crystalUpgrades || {...gameState.crystalUpgrades};
                 gameState.baseClickPower = loaded.baseClickPower || 1;
                 gameState.criticalChance = loaded.criticalChance || 0;
                 gameState.criticalMultiplier = loaded.criticalMultiplier || 2;
