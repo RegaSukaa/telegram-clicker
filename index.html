@@ -14,6 +14,7 @@
             --color-bg: #1a1a2e;
             --color-critical: #ff5555;
             --color-click: #6a5acd;
+            --color-quest: #55ff55;
         }
         
         * {
@@ -29,6 +30,15 @@
             max-width: 500px;
             margin: 0 auto;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(5px);
         }
         
         .pixel-border {
@@ -56,12 +66,16 @@
             text-shadow: 2px 2px 0 #000;
             font-size: 24px;
             margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
         }
         
         #currency-display {
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
         }
         
         .currency {
@@ -80,48 +94,27 @@
             margin: 20px 0;
             position: relative;
             height: 200px;
+            z-index: 2;
         }
         
         #click-button {
-            width: 180px; /* Увеличили размер кнопки */
-            height: 180px; /* Увеличили размер кнопки */
+            width: 180px;
+            height: 180px;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="%23ffd700"/><circle cx="12" cy="12" r="6" fill="%236a5acd"/></svg>') center/cover;
             border: none;
             cursor: pointer;
             position: relative;
             z-index: 2;
-            /* Убираем выделение при клике */
             -webkit-tap-highlight-color: transparent;
             outline: none;
-            /* Плавная анимация */
             transition: transform 0.1s, box-shadow 0.2s;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(106, 90, 205, 0.5);
         }
         
         #click-button:active {
             transform: scale(0.95);
-            box-shadow: 0 0 20px rgba(106, 90, 205, 0.8);
-        }
-        
-        .minigame-star {
-            width: 60px;
-            height: 60px;
-            position: absolute;
-            cursor: pointer;
-            font-size: 40px;
-            text-align: center;
-            line-height: 60px;
-            /* Анимация мерцания */
-            animation: twinkle 1.5s infinite alternate;
-        }
-        
-        @keyframes twinkle {
-            0% { opacity: 0.7; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.1); }
-        }
-        
-        /* Увеличим область мини-игр */
-        #minigame-area, #minigame3-area {
-            height: 250px;
+            box-shadow: 0 0 30px rgba(106, 90, 205, 0.8);
         }
         
         .cps-display {
@@ -134,6 +127,8 @@
             display: flex;
             margin-bottom: 10px;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
         }
         
         .tab {
@@ -145,6 +140,11 @@
             border-bottom: 2px solid transparent;
             min-width: 33%;
             font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            background: rgba(106, 90, 205, 0.8);
         }
         
         .tab.active {
@@ -156,6 +156,8 @@
             display: none;
             max-height: 300px;
             overflow-y: auto;
+            position: relative;
+            z-index: 2;
         }
         
         .tab-content.active {
@@ -172,6 +174,7 @@
             cursor: pointer;
             border: 1px solid var(--color-secondary);
             transition: all 0.2s;
+            border-radius: 5px;
         }
         
         .upgrade.available {
@@ -182,6 +185,7 @@
         
         .upgrade:hover {
             background: rgba(106, 90, 205, 0.4);
+            transform: translateY(-2px);
         }
         
         .upgrade-info {
@@ -208,12 +212,18 @@
             background: rgba(26, 26, 46, 0.7);
             border: 1px solid var(--color-primary);
             transition: all 0.2s;
+            border-radius: 5px;
         }
         
         .generator.available {
             background: rgba(26, 26, 46, 0.9);
             border: 1px solid var(--color-accent);
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .generator:hover {
+            background: rgba(26, 26, 46, 0.8);
         }
         
         .generator-icon {
@@ -225,6 +235,7 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            border-radius: 5px;
         }
         
         .generator-info {
@@ -285,6 +296,7 @@
             cursor: pointer;
             box-shadow: 0 0 10px rgba(255, 85, 85, 0.7);
             transition: transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .minigame-target:active {
@@ -299,12 +311,15 @@
             background: rgba(106, 90, 205, 0.2);
             border: 1px solid var(--color-primary);
             opacity: 0.5;
+            border-radius: 5px;
+            transition: all 0.3s;
         }
         
         .achievement.unlocked {
             opacity: 1;
             background: rgba(106, 90, 205, 0.5);
             border: 1px solid var(--color-accent);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
         
         .achievement-icon {
@@ -317,6 +332,7 @@
             justify-content: center;
             font-size: 20px;
             color: #000;
+            border-radius: 5px;
         }
         
         .daily-reward {
@@ -333,11 +349,14 @@
             justify-content: center;
             border: 1px solid var(--color-primary);
             background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            transition: all 0.3s;
         }
         
         .reward-day.active {
             background: rgba(255, 215, 0, 0.3);
             border-color: var(--color-accent);
+            transform: scale(1.1);
         }
         
         .reward-day.claimed {
@@ -353,6 +372,13 @@
             margin-bottom: 10px;
             background: rgba(26, 26, 46, 0.7);
             border: 1px solid var(--color-primary);
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .crystal-shop-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
         }
         
         .crystal-shop-item button {
@@ -363,6 +389,12 @@
             cursor: pointer;
             font-weight: bold;
             min-width: 120px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .crystal-shop-item button:hover {
+            background: #ffcc00;
         }
         
         .crystal-shop-item button:disabled {
@@ -375,11 +407,13 @@
             background: rgba(0, 0, 0, 0.3);
             margin-top: 5px;
             position: relative;
+            border-radius: 5px;
         }
         
         .progress-bar-fill {
             height: 100%;
             background: var(--color-accent);
+            border-radius: 5px;
         }
         
         .profile-container {
@@ -398,6 +432,7 @@
             font-size: 40px;
             color: var(--color-accent);
             overflow: hidden;
+            box-shadow: 0 0 15px rgba(106, 90, 205, 0.5);
         }
         
         .profile-avatar img {
@@ -421,6 +456,7 @@
             background: rgba(106, 90, 205, 0.3);
             padding: 10px;
             border: 1px solid var(--color-primary);
+            border-radius: 5px;
         }
         
         .developer-panel {
@@ -429,6 +465,7 @@
             padding: 15px;
             margin-top: 20px;
             border: 2px solid var(--color-critical);
+            border-radius: 10px;
         }
         
         .dev-input {
@@ -438,6 +475,7 @@
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--color-accent);
             color: white;
+            border-radius: 5px;
         }
         
         .dev-btn {
@@ -448,6 +486,12 @@
             margin: 5px;
             cursor: pointer;
             width: 100%;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .dev-btn:hover {
+            background: #ff3333;
         }
         
         .notification {
@@ -460,6 +504,8 @@
             border: 2px solid var(--color-accent);
             z-index: 100;
             animation: fadeOut 3s forwards;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
         
         @keyframes fadeOut {
@@ -470,58 +516,197 @@
         
         .minigame-selector {
             display: flex;
-            justify-content: space-around;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 15px;
         }
         
         .minigame-btn {
-            padding: 8px;
+            padding: 10px 15px;
             background: var(--color-primary);
             border: none;
             color: white;
             cursor: pointer;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
         }
         
         .minigame-btn.active {
             background: var(--color-accent);
             color: black;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
         
         .minigame-container {
             display: none;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 10px;
         }
         
         .minigame-container.active {
             display: block;
+            animation: fadeIn 0.5s;
         }
         
-        #minigame2-area {
-            text-align: center;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        #minigame2-button {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: var(--color-critical);
-            border: none;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 20px auto;
-            box-shadow: 0 0 15px rgba(255, 85, 85, 0.7);
+        .minigame-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
         }
         
-        .bug-report {
-            background: rgba(255, 85, 85, 0.2);
-            padding: 10px;
-            text-align: center;
-            border: 1px solid var(--color-critical);
+        .minigame-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 18px;
             margin-top: 10px;
+        }
+        
+        .minigame-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .quest {
+            background: rgba(85, 255, 85, 0.1);
+            border: 1px solid var(--color-quest);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .quest.completed {
+            background: rgba(85, 255, 85, 0.3);
+            box-shadow: 0 0 10px rgba(85, 255, 85, 0.5);
+        }
+        
+        .quest-progress {
+            height: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .quest-progress-bar {
+            height: 100%;
+            background: var(--color-quest);
+            border-radius: 5px;
+        }
+        
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(106, 90, 205, 0.2);
+            border-radius: 5px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--color-accent);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .prestige-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(106,90,205,0.9) 100%);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: prestigeGlow 2s forwards;
+        }
+        
+        @keyframes prestigeGlow {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(1.5); display: none; }
+        }
+        
+        .prestige-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px #000;
+            animation: textPulse 1s infinite alternate;
+        }
+        
+        @keyframes textPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
         }
     </style>
 </head>
 <body>
+    <div class="prestige-effect" id="prestige-effect">
+        <div class="prestige-text">ПРЕСТИЖ!</div>
+        <div class="prestige-text">+<span id="prestige-crystals-effect">0</span> кристаллов</div>
+    </div>
+    
     <div class="pixel-border">
         <h1>PIXEL CLICKER</h1>
         
@@ -548,7 +733,8 @@
             <div class="tab active" data-tab="generators">ГЕНЕРАТОРЫ</div>
             <div class="tab" data-tab="upgrades">УЛУЧШЕНИЯ</div>
             <div class="tab" data-tab="prestige">ПРЕСТИЖ</div>
-            <div class="tab" data-tab="minigame">МИНИ-ИГРА</div>
+            <div class="tab" data-tab="minigame">МИНИ ИГРЫ</div>
+            <div class="tab" data-tab="quests">КВЕСТЫ</div>
             <div class="tab" data-tab="achievements">ДОСТИЖЕНИЯ</div>
             <div class="tab" data-tab="daily">ЕЖЕДНЕВНО</div>
             <div class="tab" data-tab="crystals">МАГАЗИН</div>
@@ -582,33 +768,59 @@
                 </div>
                 
                 <div id="minigame1" class="minigame-container active">
-                    <h3>УДАРЬ ПО МИШЕНИ!</h3>
+                    <div class="minigame-header">
+                        <h3>УДАРЬ ПО МИШЕНИ!</h3>
+                        <div class="minigame-stats">
+                            <div>Время: <span id="minigame-timer">30</span> сек</div>
+                            <div>Мишени: <span id="minigame-score">0</span></div>
+                        </div>
+                    </div>
                     <p>За каждую мишень: <strong>+<span id="minigame-reward">1</span> кристалл</strong></p>
-                    <p>Времени осталось: <span id="minigame-timer">30</span> сек</p>
-                    <p>Сбито мишеней: <span id="minigame-score">0</span></p>
-                    <button id="minigame-start">НАЧАТЬ ИГРУ</button>
-                    <div id="minigame-area" style="position:relative; height:200px; margin-top:20px; display:none;"></div>
+                    <div id="minigame-area" style="position:relative; height:250px; margin-top:20px; display:none;"></div>
+                    <div class="minigame-controls">
+                        <button id="minigame-start">НАЧАТЬ ИГРУ</button>
+                    </div>
                 </div>
                 
                 <div id="minigame2" class="minigame-container">
-                    <h3>БЫСТРЫЕ КЛИКИ!</h3>
-                    <p>Кликните как можно больше раз за 10 секунд</p>
-                    <p>Времени осталось: <span id="minigame2-timer">10</span> сек</p>
-                    <p>Кликов: <span id="minigame2-score">0</span></p>
-                    <div id="minigame2-area">
-                        <button id="minigame2-button">КЛИКАЙ!</button>
+                    <div class="minigame-header">
+                        <h3>БЫСТРЫЕ КЛИКИ!</h3>
+                        <div class="minigame-stats">
+                            <div>Время: <span id="minigame2-timer">10</span> сек</div>
+                            <div>Кликов: <span id="minigame2-score">0</span></div>
+                        </div>
                     </div>
-                    <button id="minigame2-start">НАЧАТЬ ИГРУ</button>
+                    <p>Кликните как можно больше раз за 10 секунд</p>
+                    <div id="minigame2-area">
+                        <button id="minigame2-button" style="display:none;">КЛИКАЙ!</button>
+                    </div>
+                    <div class="minigame-controls">
+                        <button id="minigame2-start">НАЧАТЬ ИГРУ</button>
+                    </div>
                 </div>
                 
                 <div id="minigame3" class="minigame-container">
-                    <h3>ПАДАЮЩИЕ ЗВЕЗДЫ!</h3>
+                    <div class="minigame-header">
+                        <h3>ПАДАЮЩИЕ ЗВЕЗДЫ!</h3>
+                        <div class="minigame-stats">
+                            <div>Время: <span id="minigame3-timer">20</span> сек</div>
+                            <div>Звезд: <span id="minigame3-score">0</span></div>
+                        </div>
+                    </div>
                     <p>Кликните по звезде до того, как она исчезнет</p>
-                    <p>Времени осталось: <span id="minigame3-timer">20</span> сек</p>
-                    <p>Звезд собрано: <span id="minigame3-score">0</span></p>
-                    <button id="minigame3-start">НАЧАТЬ ИГРУ</button>
-                    <div id="minigame3-area" style="position:relative; height:200px; margin-top:20px; display:none;"></div>
+                    <div class="minigame-controls">
+                        <button id="minigame3-start">НАЧАТЬ ИГРУ</button>
+                    </div>
+                    <div id="minigame3-area" style="position:relative; height:250px; margin-top:20px; display:none;"></div>
                 </div>
+            </div>
+        </div>
+        
+        <div id="quests" class="tab-content">
+            <div class="pixel-border">
+                <h3>ЕЖЕДНЕВНЫЕ КВЕСТЫ</h3>
+                <p>Обновляются через: <span id="quests-reset">24:00:00</span></p>
+                <!-- Квесты будут добавлены через JS -->
             </div>
         </div>
         
@@ -799,6 +1011,12 @@
                 { id: 14, name: "Генераторный магнат", description: "Иметь 100 уровней генераторов", icon: "🏗️", unlocked: false, reward: 800, condition: state => state.generators.reduce((sum, g) => sum + g.level, 0) >= 100 },
                 { id: 15, name: "Мастер всех мини-игр", description: "Заработать 100 кристаллов в мини-играх", icon: "🎯", unlocked: false, reward: 1000, condition: state => state.minigameTotalCrystals >= 100 }
             ],
+            quests: [
+                { id: 1, name: "Кликер новичок", description: "Сделайте 100 кликов", reward: 20, progress: 0, target: 100, completed: false },
+                { id: 2, name: "Покупатель", description: "Купите 5 улучшений", reward: 30, progress: 0, target: 5, completed: false },
+                { id: 3, name: "Мини-игрок", description: "Заработайте 10 кристаллов в мини-играх", reward: 50, progress: 0, target: 10, completed: false }
+            ],
+            lastQuestUpdate: 0,
             crystalUpgrades: {
                 clickMultiplier: 0,
                 generatorBoost: 0,
@@ -824,7 +1042,8 @@
             minigame2Time: 0,
             minigame3Active: false,
             minigame3Score: 0,
-            minigame3Time: 0
+            minigame3Time: 0,
+            soundEnabled: true
         };
         
         // Переменные для расчета CPS
@@ -833,15 +1052,32 @@
         let minigame2Interval;
         let minigame3Interval;
         let lastAchievementNotification = 0;
+        let cloudInterval;
+        
+        // Аудио элементы
+        const clickSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3');
+        const criticalSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3');
+        const achievementSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3');
+        const purchaseSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.mp3');
+        const prestigeSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-2983.mp3');
+        
+        // Установка громкости
+        clickSound.volume = 0.3;
+        criticalSound.volume = 0.5;
+        achievementSound.volume = 0.5;
+        purchaseSound.volume = 0.5;
+        prestigeSound.volume = 0.7;
         
         // Инициализация игры
         function initGame() {
             loadGame();
             setupUserProfile();
+            createClouds();
             renderGame();
             setupEventListeners();
             checkAchievements();
             updateDailyReward();
+            updateQuestsTimer();
             
             // Автоматическое начисление кликов ТОЛЬКО ОТ ГЕНЕРАТОРОВ
             setInterval(() => {
@@ -858,6 +1094,31 @@
                 // Обновляем прогресс критического удара
                 updateCriticalBar();
             }, 100);
+        }
+        
+        // Создание облаков для фона
+        function createClouds() {
+            const gameContainer = document.querySelector('.pixel-border');
+            for (let i = 0; i < 8; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                
+                // Случайные параметры облака
+                const size = Math.random() * 100 + 50;
+                const opacity = Math.random() * 0.05 + 0.05;
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const duration = Math.random() * 60 + 60;
+                
+                cloud.style.width = `${size}px`;
+                cloud.style.height = `${size}px`;
+                cloud.style.opacity = opacity;
+                cloud.style.left = `${x}%`;
+                cloud.style.top = `${y}%`;
+                cloud.style.animation = `float ${duration}s infinite linear`;
+                
+                document.body.appendChild(cloud);
+            }
         }
         
         // Расчет CPS
@@ -921,6 +1182,7 @@
                 const levelReward = gameState.level * 100;
                 gameState.crystals += levelReward;
                 showNotification(`🎉 Уровень ${gameState.level}! +${levelReward} кристаллов`);
+                if (gameState.soundEnabled) achievementSound.play().catch(e => console.log("Audio error:", e));
             }
             
             const levelBar = document.getElementById('level-bar');
@@ -969,6 +1231,7 @@
             renderPrestige();
             renderAchievements();
             renderCrystalShop();
+            renderQuests();
             updateButtonStates();
         }
         
@@ -1069,6 +1332,104 @@
             });
         }
         
+        // Отрисовка квестов
+        function renderQuests() {
+            const container = document.getElementById('quests');
+            const questsList = container.querySelector('.pixel-border');
+            if (!questsList) return;
+            
+            // Удаляем старые квесты
+            while (questsList.children.length > 2) {
+                questsList.removeChild(questsList.lastChild);
+            }
+            
+            gameState.quests.forEach(quest => {
+                const questElement = document.createElement('div');
+                questElement.className = `quest ${quest.completed ? 'completed' : ''}`;
+                
+                const percent = Math.min(100, (quest.progress / quest.target) * 100);
+                
+                questElement.innerHTML = `
+                    <div><strong>${quest.name}</strong></div>
+                    <div>${quest.description}</div>
+                    <div>Прогресс: ${quest.progress}/${quest.target}</div>
+                    <div class="quest-progress">
+                        <div class="quest-progress-bar" style="width: ${percent}%"></div>
+                    </div>
+                    <div>Награда: ${quest.reward} кристаллов</div>
+                `;
+                
+                questsList.appendChild(questElement);
+            });
+        }
+        
+        // Обновление таймера квестов
+        function updateQuestsTimer() {
+            const now = Date.now();
+            const lastUpdate = gameState.lastQuestUpdate;
+            const nextUpdate = lastUpdate + 24 * 60 * 60 * 1000;
+            
+            if (now > nextUpdate) {
+                resetQuests();
+                gameState.lastQuestUpdate = now;
+            } else {
+                const timeLeft = nextUpdate - now;
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                document.getElementById('quests-reset').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            setTimeout(updateQuestsTimer, 1000);
+        }
+        
+        // Сброс квестов
+        function resetQuests() {
+            gameState.quests.forEach(quest => {
+                quest.progress = 0;
+                quest.completed = false;
+            });
+            renderQuests();
+        }
+        
+        // Проверка квестов
+        function checkQuests() {
+            let completedSomething = false;
+            
+            gameState.quests.forEach(quest => {
+                if (!quest.completed) {
+                    switch (quest.id) {
+                        case 1: // Клики
+                            quest.progress = gameState.totalClicks;
+                            break;
+                        case 2: // Улучшения
+                            quest.progress = gameState.upgrades.reduce((sum, u) => sum + u.level, 0);
+                            break;
+                        case 3: // Мини-игры
+                            quest.progress = gameState.minigameTotalCrystals;
+                            break;
+                    }
+                    
+                    if (quest.progress >= quest.target) {
+                        quest.completed = true;
+                        gameState.crystals += quest.reward;
+                        gameState.totalCrystals += quest.reward;
+                        completedSomething = true;
+                        showNotification(`✅ Квест выполнен: ${quest.name}! +${quest.reward} кристаллов`);
+                        if (gameState.soundEnabled) achievementSound.play().catch(e => console.log("Audio error:", e));
+                    }
+                }
+            });
+            
+            if (completedSomething) {
+                renderQuests();
+                updateDisplays();
+                saveGame();
+            }
+        }
+        
         // Отрисовка престижа
         function renderPrestige() {
             const baseCrystals = Math.floor(Math.sqrt(gameState.clicks / 100000));
@@ -1147,6 +1508,8 @@
                 generator.level++;
                 renderGame();
                 checkAchievements();
+                checkQuests();
+                if (gameState.soundEnabled) purchaseSound.play().catch(e => console.log("Audio error:", e));
             }
         }
         
@@ -1186,6 +1549,8 @@
                 
                 renderGame();
                 checkAchievements();
+                checkQuests();
+                if (gameState.soundEnabled) purchaseSound.play().catch(e => console.log("Audio error:", e));
             }
         }
         
@@ -1202,6 +1567,7 @@
                     
                     // Показываем уведомление
                     showNotification(`🏆 Достижение: ${achievement.name}! +${achievement.reward} кристаллов`);
+                    if (gameState.soundEnabled) achievementSound.play().catch(e => console.log("Audio error:", e));
                 }
             });
             
@@ -1219,26 +1585,37 @@
             const bonusMultiplier = gameState.crystalUpgrades.prestigeBoost ? 1.5 : 1;
             const crystals = Math.floor(baseCrystals * bonusMultiplier);
             
-            gameState.crystals += crystals;
-            gameState.prestige++;
+            // Показываем эффект престижа
+            document.getElementById('prestige-crystals-effect').textContent = crystals;
+            const effect = document.getElementById('prestige-effect');
+            effect.style.display = 'flex';
             
-            // Сброс состояния
-            gameState.clicks = 0;
-            gameState.generators.forEach(g => g.level = 0);
-            gameState.upgrades.forEach(u => u.level = 0);
-            gameState.baseClickPower = 1;
-            gameState.criticalChance = 0;
-            gameState.quantumChance = 0;
-            gameState.costReduction = 0;
+            if (gameState.soundEnabled) prestigeSound.play().catch(e => console.log("Audio error:", e));
             
-            // Сбросить улучшения, но сохранить кристальные
-            gameState.crystalUpgrades = {
-                ...gameState.crystalUpgrades
-            };
-            
-            renderGame();
-            saveGame();
-            checkAchievements();
+            setTimeout(() => {
+                effect.style.display = 'none';
+                
+                gameState.crystals += crystals;
+                gameState.prestige++;
+                
+                // Сброс состояния
+                gameState.clicks = 0;
+                gameState.generators.forEach(g => g.level = 0);
+                gameState.upgrades.forEach(u => u.level = 0);
+                gameState.baseClickPower = 1;
+                gameState.criticalChance = 0;
+                gameState.quantumChance = 0;
+                gameState.costReduction = 0;
+                
+                // Сбросить улучшения, но сохранить кристальные
+                gameState.crystalUpgrades = {
+                    ...gameState.crystalUpgrades
+                };
+                
+                renderGame();
+                saveGame();
+                checkAchievements();
+            }, 2000);
         }
         
         // Эффект клика
@@ -1265,16 +1642,21 @@
             clickTimestamps.push(now);
             gameState.totalClicks++;
             
+            // Звук клика
+            if (gameState.soundEnabled) clickSound.play().catch(e => console.log("Audio error:", e));
+            
             // Проверка на квантовый клик
             let isCritical = false;
             if (Math.random() * 100 < gameState.quantumChance) {
                 clickValue *= 100;
                 isCritical = true;
+                if (gameState.soundEnabled) criticalSound.play().catch(e => console.log("Audio error:", e));
             } 
             // Проверка на критический клик
             else if (Math.random() * 100 < gameState.criticalChance) {
                 clickValue *= gameState.criticalMultiplier;
                 isCritical = true;
+                if (gameState.soundEnabled) criticalSound.play().catch(e => console.log("Audio error:", e));
             }
             
             gameState.clicks += clickValue;
@@ -1284,6 +1666,9 @@
             
             // Обновляем XP
             updateXp(clickValue / 10);
+            
+            // Проверяем квесты
+            checkQuests();
             
             updateDisplays();
         }
@@ -1297,14 +1682,12 @@
             document.getElementById('minigame-start').disabled = true;
             const area = document.getElementById('minigame-area');
             area.style.display = 'block';
-            area.innerHTML = ''; // Очищаем предыдущие мишени
+            area.innerHTML = '';
             document.getElementById('minigame-score').textContent = '0';
             document.getElementById('minigame-timer').textContent = '30';
             
-            // Создаем первую мишень
             createMinigameTarget();
             
-            // Таймер игры
             minigameInterval = setInterval(() => {
                 gameState.minigameTime--;
                 document.getElementById('minigame-timer').textContent = gameState.minigameTime;
@@ -1334,6 +1717,7 @@
                 document.getElementById('minigame-score').textContent = gameState.minigameScore;
                 target.remove();
                 createMinigameTarget();
+                if (gameState.soundEnabled) clickSound.play().catch(e => console.log("Audio error:", e));
             });
             
             area.appendChild(target);
@@ -1365,9 +1749,11 @@
             // Обновляем отображение
             updateDisplays();
             checkAchievements();
+            checkQuests();
             saveGame();
             
             showNotification(`🎯 Вы заработали ${totalReward} кристаллов!`);
+            if (gameState.soundEnabled) achievementSound.play().catch(e => console.log("Audio error:", e));
         }
         
         // Мини-игра 2: Быстрые клики
@@ -1397,6 +1783,7 @@
             
             gameState.minigame2Score++;
             document.getElementById('minigame2-score').textContent = gameState.minigame2Score;
+            if (gameState.soundEnabled) clickSound.play().catch(e => console.log("Audio error:", e));
         }
         
         function endMinigame2() {
@@ -1410,6 +1797,7 @@
                 gameState.minigameTotalCrystals += reward;
                 gameState.totalCrystals += reward;
                 showNotification(`🎮 Вы заработали ${reward} кристаллов!`);
+                if (gameState.soundEnabled) achievementSound.play().catch(e => console.log("Audio error:", e));
             }
             
             document.getElementById('minigame2-start').disabled = false;
@@ -1418,6 +1806,7 @@
             updateDisplays();
             saveGame();
             checkAchievements();
+            checkQuests();
         }
         
         // Мини-игра 3: Падающие звезды
@@ -1429,14 +1818,12 @@
             document.getElementById('minigame3-start').disabled = true;
             const area = document.getElementById('minigame3-area');
             area.style.display = 'block';
-            area.innerHTML = ''; // Очищаем предыдущие звезды
+            area.innerHTML = '';
             document.getElementById('minigame3-score').textContent = '0';
             document.getElementById('minigame3-timer').textContent = '20';
             
-            // Создаем звезды
             createMinigameStar();
             
-            // Таймер игры
             minigame3Interval = setInterval(() => {
                 gameState.minigame3Time--;
                 document.getElementById('minigame3-timer').textContent = gameState.minigame3Time;
@@ -1452,8 +1839,10 @@
             
             const area = document.getElementById('minigame3-area');
             const star = document.createElement('div');
-            star.className = 'minigame-star';
+            star.className = 'minigame-target';
             star.textContent = '⭐';
+            star.style.fontSize = '24px';
+            star.style.backgroundColor = 'transparent';
             
             // Случайная позиция вверху
             const x = Math.random() * (area.offsetWidth - 60);
@@ -1487,6 +1876,7 @@
                 star.remove();
                 clearInterval(fallInterval);
                 createMinigameStar();
+                if (gameState.soundEnabled) clickSound.play().catch(e => console.log("Audio error:", e));
             });
             
             area.appendChild(star);
@@ -1515,6 +1905,7 @@
                 gameState.minigameTotalCrystals += totalReward;
                 gameState.totalCrystals += totalReward;
                 showNotification(`⭐ Вы заработали ${totalReward} кристаллов!`);
+                if (gameState.soundEnabled) achievementSound.play().catch(e => console.log("Audio error:", e));
             }
             
             document.getElementById('minigame3-start').disabled = false;
@@ -1524,6 +1915,7 @@
             updateDisplays();
             saveGame();
             checkAchievements();
+            checkQuests();
         }
         
         // Ежедневная награда
@@ -1606,8 +1998,10 @@
             updateDisplays();
             saveGame();
             checkAchievements();
+            checkQuests();
             
             showNotification(`📅 Получена ежедневная награда!`);
+            if (gameState.soundEnabled) achievementSound.play().catch(e => console.log("Audio error:", e));
         }
         
         // Покупка улучшений за кристаллы
@@ -1669,7 +2063,9 @@
                 updateDisplays();
                 saveGame();
                 checkAchievements();
+                checkQuests();
                 showNotification(`🛒 Улучшение куплено!`);
+                if (gameState.soundEnabled) purchaseSound.play().catch(e => console.log("Audio error:", e));
             }
         }
         
@@ -1825,6 +2221,8 @@
                 gameState.generators = loaded.generators || gameState.generators;
                 gameState.upgrades = loaded.upgrades || gameState.upgrades;
                 gameState.achievements = loaded.achievements || gameState.achievements;
+                gameState.quests = loaded.quests || gameState.quests;
+                gameState.lastQuestUpdate = loaded.lastQuestUpdate || Date.now();
                 gameState.crystalUpgrades = loaded.crystalUpgrades || gameState.crystalUpgrades;
                 gameState.baseClickPower = loaded.baseClickPower || 1;
                 gameState.criticalChance = loaded.criticalChance || 0;
@@ -1840,6 +2238,7 @@
                 gameState.level = loaded.level || 1;
                 gameState.xp = loaded.xp || 0;
                 gameState.nextLevelXp = loaded.nextLevelXp || 100;
+                gameState.soundEnabled = loaded.soundEnabled !== undefined ? loaded.soundEnabled : true;
             }
         }
         
