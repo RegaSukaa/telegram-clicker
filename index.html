@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Clicker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- ОБЯЗАТЕЛЬНО подключи SDK -->
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        #score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        #clickButton {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 24px;
+            border: none;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+        }
+        #clickButton:active {
+            background-color: #3e8e41;
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Clicker</h1>
+    <div id="score">0</div>
+    <button id="clickButton">КЛИКНИ!</button>
+
+    <script>
+        // Инициализация Web App Telegram
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Раскрыть Web App на весь экран
+        tg.MainButton.hide(); // Скрыть основную кнопку (пока не нужна)
+
+        // Получаем элементы DOM
+        const scoreElement = document.getElementById('score');
+        const clickButton = document.getElementById('clickButton');
+
+        // Начальный счет (попробуем загрузить из localStorage)
+        let score = parseInt(localStorage.getItem('clickerScore')) || 0;
+        scoreElement.textContent = score;
+
+        // Обработчик клика по кнопке
+        clickButton.addEventListener('click', () => {
+            score++;
+            scoreElement.textContent = score;
+            localStorage.setItem('clickerScore', score); // Сохраняем в localStorage
+
+            // Опционально: Отправить данные боту (например, при каждом клике или по кнопке "Сохранить")
+            // tg.sendData(JSON.stringify({score: score})); // Раскомментируй, если нужно
+        });
+
+        // Опционально: Кнопка для отправки результата боту
+        // tg.MainButton.setText("Сохранить счет");
+        // tg.MainButton.show();
+        // tg.MainButton.onClick(() => {
+        //     tg.sendData(JSON.stringify({action: 'save_score', score: score}));
+        //     tg.close(); // Закрыть Web App после отправки
+        // });
+
+        // Обработчик события получения данных ОТ БОТА (если нужно)
+        tg.onEvent('mainButtonClicked', function() {
+            console.log('MainButton clicked');
+        });
+    </script>
+</body>
+</html>
