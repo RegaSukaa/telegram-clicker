@@ -12,6 +12,7 @@
             --color-secondary: #9370db;
             --color-accent: #ffd700;
             --color-bg: #1a1a2e;
+            --color-critical: #ff5555;
         }
         
         * {
@@ -76,6 +77,7 @@
         #click-area {
             text-align: center;
             margin: 20px 0;
+            position: relative;
         }
         
         #click-button {
@@ -85,6 +87,8 @@
             border: none;
             cursor: pointer;
             transition: transform 0.1s;
+            position: relative;
+            z-index: 2;
         }
         
         #click-button:active {
@@ -100,6 +104,7 @@
         .tabs {
             display: flex;
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
         
         .tab {
@@ -109,6 +114,7 @@
             background: var(--color-primary);
             cursor: pointer;
             border-bottom: 2px solid transparent;
+            min-width: 33%;
         }
         
         .tab.active {
@@ -118,6 +124,8 @@
         
         .tab-content {
             display: none;
+            max-height: 300px;
+            overflow-y: auto;
         }
         
         .tab-content.active {
@@ -133,6 +141,13 @@
             background: rgba(106, 90, 205, 0.2);
             cursor: pointer;
             border: 1px solid var(--color-secondary);
+            transition: all 0.2s;
+        }
+        
+        .upgrade.available {
+            background: rgba(106, 90, 205, 0.6);
+            border: 1px solid var(--color-accent);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
         .upgrade:hover {
@@ -162,6 +177,13 @@
             padding: 10px;
             background: rgba(26, 26, 46, 0.7);
             border: 1px solid var(--color-primary);
+            transition: all 0.2s;
+        }
+        
+        .generator.available {
+            background: rgba(26, 26, 46, 0.9);
+            border: 1px solid var(--color-accent);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
         
         .generator-icon {
@@ -192,6 +214,132 @@
             color: var(--color-accent);
             font-weight: bold;
         }
+        
+        .critical-effect {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--color-critical);
+            z-index: 3;
+            pointer-events: none;
+            animation: criticalAnimation 1s forwards;
+            text-shadow: 0 0 5px #000;
+        }
+        
+        @keyframes criticalAnimation {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(0, -100px) scale(3); opacity: 0; }
+        }
+        
+        .minigame-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .minigame-target {
+            width: 60px;
+            height: 60px;
+            background-color: var(--color-critical);
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 85, 85, 0.7);
+            transition: transform 0.1s;
+        }
+        
+        .minigame-target:active {
+            transform: scale(0.9);
+        }
+        
+        .achievement {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(106, 90, 205, 0.2);
+            border: 1px solid var(--color-primary);
+            opacity: 0.5;
+        }
+        
+        .achievement.unlocked {
+            opacity: 1;
+            background: rgba(106, 90, 205, 0.5);
+            border: 1px solid var(--color-accent);
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: var(--color-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #000;
+        }
+        
+        .daily-reward {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+        
+        .reward-day {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--color-primary);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .reward-day.active {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: var(--color-accent);
+        }
+        
+        .reward-day.claimed {
+            background: rgba(106, 90, 205, 0.6);
+            border-color: var(--color-secondary);
+        }
+        
+        .crystal-shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(26, 26, 46, 0.7);
+            border: 1px solid var(--color-primary);
+        }
+        
+        .crystal-shop-item button {
+            background: var(--color-accent);
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .crystal-shop-item button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            margin-top: 5px;
+            position: relative;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--color-accent);
+        }
     </style>
 </head>
 <body>
@@ -211,13 +359,20 @@
         
         <div id="click-area">
             <button id="click-button"></button>
-            <div class="cps-display">Кликов в секунду: <span id="cps-value">0</span></div>
+            <div class="cps-display">Кликов/сек: <span id="cps-value">0.00</span></div>
+            <div class="progress-bar">
+                <div id="critical-bar" class="progress-bar-fill" style="width: 0%"></div>
+            </div>
         </div>
         
         <div class="tabs">
             <div class="tab active" data-tab="generators">ГЕНЕРАТОРЫ</div>
             <div class="tab" data-tab="upgrades">УЛУЧШЕНИЯ</div>
             <div class="tab" data-tab="prestige">ПРЕСТИЖ</div>
+            <div class="tab" data-tab="minigame">МИНИ-ИГРА</div>
+            <div class="tab" data-tab="achievements">ДОСТИЖЕНИЯ</div>
+            <div class="tab" data-tab="daily">ЕЖЕДНЕВНО</div>
+            <div class="tab" data-tab="crystals">МАГАЗИН</div>
         </div>
         
         <div id="generators" class="tab-content active">
@@ -237,6 +392,70 @@
                 <p><small>При престиже вы потеряете все клики и улучшения, но получите кристаллы для постоянных бонусов</small></p>
             </div>
         </div>
+        
+        <div id="minigame" class="tab-content">
+            <div class="minigame-container">
+                <h3>УДАРЬ ПО МИШЕНИ!</h3>
+                <p>За каждую мишень: <strong>+1 кристалл</strong></p>
+                <p>Времени осталось: <span id="minigame-timer">30</span> сек</p>
+                <p>Сбито мишеней: <span id="minigame-score">0</span></p>
+                <button id="minigame-start">НАЧАТЬ ИГРУ</button>
+                <div id="minigame-area" style="position:relative; height:200px; margin-top:20px; display:none;"></div>
+            </div>
+        </div>
+        
+        <div id="achievements" class="tab-content">
+            <div class="pixel-border">
+                <h3>ДОСТИЖЕНИЯ</h3>
+                <!-- Достижения будут добавлены через JS -->
+            </div>
+        </div>
+        
+        <div id="daily" class="tab-content">
+            <div class="pixel-border">
+                <h3>ЕЖЕДНЕВНАЯ НАГРАДА</h3>
+                <p>Последняя награда: <span id="last-reward">Никогда</span></p>
+                <p>Текущая серия: <span id="reward-streak">0</span> дней</p>
+                <div class="daily-reward">
+                    <div class="reward-day">1</div>
+                    <div class="reward-day">2</div>
+                    <div class="reward-day">3</div>
+                    <div class="reward-day">4</div>
+                    <div class="reward-day">5</div>
+                    <div class="reward-day">6</div>
+                    <div class="reward-day">7</div>
+                </div>
+                <button id="daily-reward-btn" disabled>Получить награду</button>
+                <p>Сегодняшняя награда: <span id="today-reward">100 кликов + 1 кристалл</span></p>
+            </div>
+        </div>
+        
+        <div id="crystals" class="tab-content">
+            <div class="pixel-border">
+                <h3>МАГАЗИН КРИСТАЛЛОВ</h3>
+                <div class="crystal-shop-item">
+                    <div>
+                        <strong>Удвоитель кликов</strong>
+                        <p>Постоянно удваивает вашу силу кликов</p>
+                    </div>
+                    <button id="buy-doubler">50 кристаллов</button>
+                </div>
+                <div class="crystal-shop-item">
+                    <div>
+                        <strong>Золотой генератор</strong>
+                        <p>+10% к эффективности всех генераторов</p>
+                    </div>
+                    <button id="buy-generator-boost">100 кристаллов</button>
+                </div>
+                <div class="crystal-shop-item">
+                    <div>
+                        <strong>Небесный клик</strong>
+                        <p>Шанс 10% на 10x клик</p>
+                    </div>
+                    <button id="buy-super-click">200 кристаллов</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -251,6 +470,8 @@
             crystals: 0,
             prestige: 0,
             cps: 0,
+            manualClicks: 0,
+            lastClick: 0,
             generators: [
                 { id: 1, name: "Помощник", level: 0, baseCPS: 0.1, baseCost: 15, icon: "👨‍💼" },
                 { id: 2, name: "Ферма", level: 0, baseCPS: 0.5, baseCost: 100, icon: "🌾" },
@@ -263,21 +484,53 @@
                 { id: 2, name: "Автокликер", description: "+0.01 КВС всем генераторам", level: 0, maxLevel: 5, baseCost: 500, effect: 0.01, type: "cps" },
                 { id: 3, name: "Золотая рука", description: "Шанс 5% на двойной клик", level: 0, maxLevel: 3, baseCost: 2000, effect: 5, type: "critical" }
             ],
+            achievements: [
+                { id: 1, name: "Первый клик", description: "Сделайте 1 клик", icon: "👆", unlocked: false, reward: 10, condition: clicks => clicks >= 1 },
+                { id: 2, name: "Начинающий кликер", description: "Достигните 100 кликов", icon: "🔰", unlocked: false, reward: 50, condition: clicks => clicks >= 100 },
+                { id: 3, name: "Кликер-профи", description: "Достигните 10,000 кликов", icon: "🏆", unlocked: false, reward: 200, condition: clicks => clicks >= 10000 },
+                { id: 4, name: "Мастер престижа", description: "Выполните престиж", icon: "♻️", unlocked: false, reward: 500, condition: (_, prestige) => prestige >= 1 },
+                { id: 5, name: "Быстрые пальцы", description: "Сделайте 10 кликов/сек", icon: "⚡", unlocked: false, reward: 300, condition: (_, __, cps) => cps >= 10 }
+            ],
+            crystalUpgrades: {
+                doubler: false,
+                generatorBoost: 0,
+                superClick: false
+            },
             clickPower: 1,
-            criticalChance: 0
+            criticalChance: 0,
+            criticalMultiplier: 2,
+            lastReward: 0,
+            rewardStreak: 0,
+            minigameActive: false,
+            minigameScore: 0,
+            minigameTime: 0
         };
+        
+        // Переменные для расчета CPS
+        let clickTimestamps = [];
+        let minigameInterval;
         
         // Инициализация игры
         function initGame() {
             loadGame();
             renderGame();
             setupEventListeners();
+            checkAchievements();
+            updateDailyReward();
             
             // Автоматическое начисление кликов
             setInterval(() => {
+                // Автоматический доход
                 gameState.clicks += gameState.cps / 10;
+                
+                // Обновляем CPS каждые 0.5 сек
+                updateCPS();
                 updateDisplays();
+                updateButtonStates();
                 saveGame();
+                
+                // Обновляем прогресс критического удара
+                updateCriticalBar();
             }, 100);
         }
         
@@ -300,7 +553,24 @@
                 totalCPS += generator.level * generator.baseCPS * (1 + gameState.upgrades[1].level * gameState.upgrades[1].effect);
             });
             
+            // Бонус от кристальных улучшений
+            totalCPS *= 1 + (gameState.crystalUpgrades.generatorBoost * 0.1);
+            
             return totalCPS;
+        }
+        
+        // Обновление CPS с учетом ручных кликов
+        function updateCPS() {
+            // Рассчитываем CPS от генераторов
+            const generatorCPS = calculateCPS();
+            
+            // Рассчитываем CPS от ручных кликов (за последние 5 секунд)
+            const now = Date.now();
+            clickTimestamps = clickTimestamps.filter(timestamp => now - timestamp < 5000);
+            const manualCPS = clickTimestamps.length / 5;
+            
+            // Общий CPS
+            gameState.cps = generatorCPS + manualCPS;
         }
         
         // Обновление интерфейса
@@ -309,15 +579,15 @@
             renderGenerators();
             renderUpgrades();
             renderPrestige();
+            renderAchievements();
+            updateButtonStates();
         }
         
         // Обновление цифровых значений
         function updateDisplays() {
-            gameState.cps = calculateCPS();
-            
             document.getElementById('clicks-display').textContent = formatNumber(gameState.clicks);
             document.getElementById('crystals-display').textContent = gameState.crystals;
-            document.getElementById('cps-value').textContent = formatNumber(gameState.cps);
+            document.getElementById('cps-value').textContent = gameState.cps.toFixed(2);
         }
         
         // Форматирование чисел
@@ -340,14 +610,12 @@
                     <div class="generator-icon">${generator.icon}</div>
                     <div class="generator-info">
                         <div class="generator-name">${generator.name} [${generator.level}]</div>
-                        <div class="generator-cps">${generator.baseCPS * generator.level} КВС</div>
+                        <div class="generator-cps">${(generator.baseCPS * generator.level).toFixed(2)} КВС</div>
                     </div>
                     <div class="generator-cost">${formatNumber(cost)}</div>
                 `;
                 
                 generatorElement.addEventListener('click', () => buyGenerator(generator.id));
-                if (gameState.clicks < cost) generatorElement.style.opacity = '0.5';
-                
                 container.appendChild(generatorElement);
             });
         }
@@ -376,13 +644,37 @@
                     <div class="upgrade-price">${formatNumber(cost)}</div>
                 `;
                 
-                if (upgrade.level < upgrade.maxLevel && gameState.clicks >= cost) {
+                if (upgrade.level < upgrade.maxLevel) {
                     upgradeElement.addEventListener('click', () => buyUpgrade(upgrade.id));
-                } else {
-                    upgradeElement.style.opacity = '0.5';
                 }
                 
                 container.appendChild(upgradeElement);
+            });
+        }
+        
+        // Отрисовка достижений
+        function renderAchievements() {
+            const container = document.getElementById('achievements');
+            const achievementsList = container.querySelector('.pixel-border');
+            if (!achievementsList) return;
+            
+            while (achievementsList.children.length > 1) {
+                achievementsList.removeChild(achievementsList.lastChild);
+            }
+            
+            gameState.achievements.forEach(achievement => {
+                const achievementElement = document.createElement('div');
+                achievementElement.className = `achievement ${achievement.unlocked ? 'unlocked' : ''}`;
+                achievementElement.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div>
+                        <strong>${achievement.name}</strong>
+                        <div>${achievement.description}</div>
+                        ${achievement.unlocked ? `<div>Награда: +${achievement.reward} кристаллов</div>` : ''}
+                    </div>
+                `;
+                
+                achievementsList.appendChild(achievementElement);
             });
         }
         
@@ -394,10 +686,44 @@
             
             const prestigeButton = document.getElementById('prestige-button');
             prestigeButton.disabled = gameState.clicks < 1000000;
+            prestigeButton.textContent = `ПРЕСТИЖ (требуется ${formatNumber(1000000)} кликов)`;
             
             if (!prestigeButton.onclick) {
                 prestigeButton.addEventListener('click', doPrestige);
             }
+        }
+        
+        // Обновление состояний кнопок
+        function updateButtonStates() {
+            // Обновляем генераторы
+            document.querySelectorAll('#generators .generator').forEach((element, index) => {
+                const generator = gameState.generators[index];
+                const cost = getGeneratorCost(generator);
+                
+                if (gameState.clicks >= cost && generator.level < 100) {
+                    element.classList.add('available');
+                } else {
+                    element.classList.remove('available');
+                }
+            });
+            
+            // Обновляем улучшения
+            document.querySelectorAll('#upgrades .upgrade').forEach((element, index) => {
+                const upgrade = gameState.upgrades[index];
+                const cost = getUpgradeCost(upgrade);
+                
+                if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
+                    element.classList.add('available');
+                } else {
+                    element.classList.remove('available');
+                }
+            });
+        }
+        
+        // Обновление шкалы критического удара
+        function updateCriticalBar() {
+            const criticalBar = document.getElementById('critical-bar');
+            criticalBar.style.width = `${gameState.criticalChance}%`;
         }
         
         // Покупка генератора
@@ -409,6 +735,7 @@
                 gameState.clicks -= cost;
                 generator.level++;
                 renderGame();
+                checkAchievements();
             }
         }
         
@@ -429,6 +756,33 @@
                 }
                 
                 renderGame();
+                checkAchievements();
+            }
+        }
+        
+        // Проверка достижений
+        function checkAchievements() {
+            let unlockedSomething = false;
+            
+            gameState.achievements.forEach(achievement => {
+                if (!achievement.unlocked) {
+                    const unlocked = achievement.condition(
+                        gameState.clicks, 
+                        gameState.prestige, 
+                        gameState.cps
+                    );
+                    
+                    if (unlocked) {
+                        achievement.unlocked = true;
+                        gameState.crystals += achievement.reward;
+                        unlockedSomething = true;
+                    }
+                }
+            });
+            
+            if (unlockedSomething) {
+                renderAchievements();
+                updateDisplays();
             }
         }
         
@@ -447,23 +801,239 @@
             gameState.clickPower = 1;
             gameState.criticalChance = 0;
             
+            // Сбросить улучшения, но сохранить кристальные
+            gameState.crystalUpgrades = {
+                ...gameState.crystalUpgrades
+            };
+            
             renderGame();
+            saveGame();
+            checkAchievements();
+        }
+        
+        // Визуальный эффект критического удара
+        function showCriticalEffect() {
+            const clickArea = document.getElementById('click-area');
+            const effect = document.createElement('div');
+            effect.className = 'critical-effect';
+            effect.textContent = 'CRITICAL! x' + gameState.criticalMultiplier;
+            effect.style.left = `${Math.random() * 100}%`;
+            effect.style.top = `${Math.random() * 50 + 25}%`;
+            clickArea.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 1000);
+        }
+        
+        // Мини-игра
+        function startMinigame() {
+            gameState.minigameActive = true;
+            gameState.minigameScore = 0;
+            gameState.minigameTime = 30;
+            
+            document.getElementById('minigame-start').disabled = true;
+            document.getElementById('minigame-area').style.display = 'block';
+            document.getElementById('minigame-score').textContent = '0';
+            document.getElementById('minigame-timer').textContent = '30';
+            
+            // Создаем мишени
+            createMinigameTarget();
+            
+            // Таймер игры
+            minigameInterval = setInterval(() => {
+                gameState.minigameTime--;
+                document.getElementById('minigame-timer').textContent = gameState.minigameTime;
+                
+                if (gameState.minigameTime <= 0) {
+                    endMinigame();
+                }
+            }, 1000);
+        }
+        
+        function createMinigameTarget() {
+            if (!gameState.minigameActive) return;
+            
+            const area = document.getElementById('minigame-area');
+            const target = document.createElement('div');
+            target.className = 'minigame-target';
+            
+            // Случайная позиция
+            const x = Math.random() * (area.offsetWidth - 60);
+            const y = Math.random() * (area.offsetHeight - 60);
+            target.style.left = `${x}px`;
+            target.style.top = `${y}px`;
+            
+            // Обработчик клика
+            target.addEventListener('click', () => {
+                gameState.minigameScore++;
+                document.getElementById('minigame-score').textContent = gameState.minigameScore;
+                target.remove();
+                createMinigameTarget();
+            });
+            
+            area.appendChild(target);
+            
+            // Автоматическое исчезновение через 1.5 сек
+            setTimeout(() => {
+                if (target.parentNode) {
+                    target.remove();
+                    createMinigameTarget();
+                }
+            }, 1500);
+        }
+        
+        function endMinigame() {
+            gameState.minigameActive = false;
+            clearInterval(minigameInterval);
+            
+            // Награда
+            gameState.crystals += gameState.minigameScore;
+            
+            document.getElementById('minigame-start').disabled = false;
+            document.getElementById('minigame-area').style.display = 'none';
+            document.getElementById('minigame-area').innerHTML = '';
+            
+            // Обновляем отображение
+            updateDisplays();
+        }
+        
+        // Ежедневная награда
+        function updateDailyReward() {
+            const now = Date.now();
+            const lastReward = gameState.lastReward;
+            const dailyBtn = document.getElementById('daily-reward-btn');
+            const rewardDays = document.querySelectorAll('.reward-day');
+            
+            // Сброс серии, если прошло больше 2 дней
+            if (lastReward > 0 && now - lastReward > 2 * 24 * 60 * 60 * 1000) {
+                gameState.rewardStreak = 0;
+            }
+            
+            // Проверка, можно ли получить награду сегодня
+            const lastRewardDate = lastReward ? new Date(lastReward) : null;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (lastRewardDate && lastRewardDate >= today) {
+                dailyBtn.disabled = true;
+                dailyBtn.textContent = 'Уже получено';
+            } else {
+                dailyBtn.disabled = false;
+                dailyBtn.textContent = 'Получить награду';
+            }
+            
+            // Обновление дней
+            rewardDays.forEach((day, index) => {
+                day.className = 'reward-day';
+                if (index < gameState.rewardStreak) day.classList.add('claimed');
+                if (index === gameState.rewardStreak) day.classList.add('active');
+            });
+            
+            // Награда за сегодня
+            const todayReward = 100 * Math.pow(2, gameState.rewardStreak) + ' кликов + ' + Math.min(gameState.rewardStreak + 1, 7) + ' кристаллов';
+            document.getElementById('today-reward').textContent = todayReward;
+            
+            // Последняя награда
+            if (lastReward) {
+                const lastDate = new Date(lastReward);
+                document.getElementById('last-reward').textContent = lastDate.toLocaleDateString();
+            } else {
+                document.getElementById('last-reward').textContent = 'Никогда';
+            }
+            
+            document.getElementById('reward-streak').textContent = gameState.rewardStreak;
+        }
+        
+        function claimDailyReward() {
+            const now = Date.now();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Проверка, не получали ли уже сегодня
+            if (gameState.lastReward >= today.getTime()) return;
+            
+            // Начисление награды
+            const rewardClicks = 100 * Math.pow(2, gameState.rewardStreak);
+            const rewardCrystals = Math.min(gameState.rewardStreak + 1, 7);
+            
+            gameState.clicks += rewardClicks;
+            gameState.crystals += rewardCrystals;
+            
+            // Обновление серии
+            const lastRewardDate = gameState.lastReward ? new Date(gameState.lastReward) : null;
+            if (lastRewardDate && lastRewardDate >= new Date(today.getTime() - 24 * 60 * 60 * 1000)) {
+                gameState.rewardStreak++;
+            } else {
+                gameState.rewardStreak = 1;
+            }
+            
+            gameState.lastReward = now;
+            
+            // Обновление интерфейса
+            updateDailyReward();
+            updateDisplays();
+            saveGame();
+        }
+        
+        // Покупка улучшений за кристаллы
+        function buyCrystalUpgrade(upgradeId) {
+            switch (upgradeId) {
+                case 'doubler':
+                    if (gameState.crystals >= 50 && !gameState.crystalUpgrades.doubler) {
+                        gameState.crystals -= 50;
+                        gameState.crystalUpgrades.doubler = true;
+                        gameState.clickPower *= 2;
+                    }
+                    break;
+                case 'generator-boost':
+                    if (gameState.crystals >= 100 && gameState.crystalUpgrades.generatorBoost < 5) {
+                        gameState.crystals -= 100;
+                        gameState.crystalUpgrades.generatorBoost++;
+                    }
+                    break;
+                case 'super-click':
+                    if (gameState.crystals >= 200 && !gameState.crystalUpgrades.superClick) {
+                        gameState.crystals -= 200;
+                        gameState.crystalUpgrades.superClick = true;
+                        gameState.criticalMultiplier = 10;
+                    }
+                    break;
+            }
+            
+            updateDisplays();
             saveGame();
         }
         
         // Настройка обработчиков событий
         function setupEventListeners() {
             // Клик по основной кнопке
-            document.getElementById('click-button').addEventListener('click', () => {
+            document.getElementById('click-button').addEventListener('click', (e) => {
                 let clickValue = gameState.clickPower;
                 
+                // Записываем время клика
+                const now = Date.now();
+                clickTimestamps.push(now);
+                
                 // Проверка на критический клик
+                let isCritical = false;
                 if (Math.random() * 100 < gameState.criticalChance) {
-                    clickValue *= 2;
-                    // Здесь можно добавить визуальный эффект
+                    clickValue *= gameState.criticalMultiplier;
+                    isCritical = true;
+                    showCriticalEffect();
                 }
                 
                 gameState.clicks += clickValue;
+                gameState.manualClicks++;
+                
+                // Визуальный эффект
+                if (isCritical) {
+                    e.target.style.boxShadow = '0 0 20px ' + (gameState.crystalUpgrades.superClick ? '#ff5555' : '#ffd700');
+                    setTimeout(() => {
+                        e.target.style.boxShadow = '';
+                    }, 200);
+                }
+                
                 updateDisplays();
             });
             
@@ -475,20 +1045,62 @@
                     
                     tab.classList.add('active');
                     document.getElementById(tab.dataset.tab).classList.add('active');
+                    
+                    // Остановка мини-игры при переключении вкладок
+                    if (gameState.minigameActive && tab.dataset.tab !== 'minigame') {
+                        endMinigame();
+                    }
                 });
             });
+            
+            // Мини-игра
+            document.getElementById('minigame-start').addEventListener('click', startMinigame);
+            
+            // Ежедневная награда
+            document.getElementById('daily-reward-btn').addEventListener('click', claimDailyReward);
+            
+            // Магазин кристаллов
+            document.getElementById('buy-doubler').addEventListener('click', () => buyCrystalUpgrade('doubler'));
+            document.getElementById('buy-generator-boost').addEventListener('click', () => buyCrystalUpgrade('generator-boost'));
+            document.getElementById('buy-super-click').addEventListener('click', () => buyCrystalUpgrade('super-click'));
         }
         
         // Сохранение игры
         function saveGame() {
-            localStorage.setItem('pixelClickerSave', JSON.stringify(gameState));
+            const saveData = {
+                ...gameState,
+                // Не сохраняем временные данные
+                minigameActive: false,
+                minigameScore: 0,
+                minigameTime: 0
+            };
+            localStorage.setItem('pixelClickerSave', JSON.stringify(saveData));
         }
         
         // Загрузка игры
         function loadGame() {
             const saved = localStorage.getItem('pixelClickerSave');
             if (saved) {
-                gameState = JSON.parse(saved);
+                const loaded = JSON.parse(saved);
+                
+                // Сохраняем только нужные свойства
+                gameState.clicks = loaded.clicks || 0;
+                gameState.crystals = loaded.crystals || 0;
+                gameState.prestige = loaded.prestige || 0;
+                gameState.generators = loaded.generators || gameState.generators;
+                gameState.upgrades = loaded.upgrades || gameState.upgrades;
+                gameState.achievements = loaded.achievements || gameState.achievements;
+                gameState.crystalUpgrades = loaded.crystalUpgrades || gameState.crystalUpgrades;
+                gameState.clickPower = loaded.clickPower || 1;
+                gameState.criticalChance = loaded.criticalChance || 0;
+                gameState.criticalMultiplier = loaded.criticalMultiplier || 2;
+                gameState.lastReward = loaded.lastReward || 0;
+                gameState.rewardStreak = loaded.rewardStreak || 0;
+                
+                // Применяем кристальные улучшения
+                if (gameState.crystalUpgrades.doubler) {
+                    gameState.clickPower = 2;
+                }
             }
         }
         
