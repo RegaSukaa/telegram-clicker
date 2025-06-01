@@ -1,81 +1,499 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Clicker</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- ОБЯЗАТЕЛЬНО подключи SDK -->
+    <title>Pixel Clicker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            padding: 20px;
-            background-color: #f5f5f5;
+        :root {
+            --pixel-size: 4px;
+            --color-primary: #6a5acd;
+            --color-secondary: #9370db;
+            --color-accent: #ffd700;
+            --color-bg: #1a1a2e;
         }
-        #score {
-            font-size: 48px;
+        
+        * {
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--color-bg);
+            color: #fff;
+            padding: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+        
+        .pixel-border {
+            border: 2px solid var(--color-primary);
+            position: relative;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .pixel-border::before {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid var(--color-accent);
+            z-index: -1;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--color-accent);
+            text-shadow: 2px 2px 0 #000;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        #currency-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .currency {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .currency-value {
+            font-size: 24px;
             font-weight: bold;
+            color: var(--color-accent);
+        }
+        
+        #click-area {
+            text-align: center;
             margin: 20px 0;
         }
-        #clickButton {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 24px;
+        
+        #click-button {
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="%23ffd700"/><circle cx="12" cy="12" r="6" fill="%236a5acd"/></svg>') center/cover;
             border: none;
             cursor: pointer;
-            margin: 20px auto;
+            transition: transform 0.1s;
+        }
+        
+        #click-button:active {
+            transform: scale(0.95);
+        }
+        
+        .cps-display {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: var(--color-primary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            background: transparent;
+            border-bottom: 2px solid var(--color-accent);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
             display: block;
         }
-        #clickButton:active {
-            background-color: #3e8e41;
-            transform: scale(0.98);
+        
+        .upgrade {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(106, 90, 205, 0.2);
+            cursor: pointer;
+            border: 1px solid var(--color-secondary);
+        }
+        
+        .upgrade:hover {
+            background: rgba(106, 90, 205, 0.4);
+        }
+        
+        .upgrade-info {
+            flex: 2;
+        }
+        
+        .upgrade-price {
+            flex: 1;
+            text-align: right;
+            color: var(--color-accent);
+            font-weight: bold;
+        }
+        
+        .upgrade-level {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .generator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(26, 26, 46, 0.7);
+            border: 1px solid var(--color-primary);
+        }
+        
+        .generator-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: var(--color-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .generator-info {
+            flex: 1;
+        }
+        
+        .generator-name {
+            font-weight: bold;
+        }
+        
+        .generator-cps {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .generator-cost {
+            color: var(--color-accent);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Simple Clicker</h1>
-    <div id="score">0</div>
-    <button id="clickButton">КЛИКНИ!</button>
+    <div class="pixel-border">
+        <h1>PIXEL CLICKER</h1>
+        
+        <div id="currency-display">
+            <div class="currency">
+                <div>КЛИКИ</div>
+                <div id="clicks-display" class="currency-value">0</div>
+            </div>
+            <div class="currency">
+                <div>КРИСТАЛЛЫ</div>
+                <div id="crystals-display" class="currency-value">0</div>
+            </div>
+        </div>
+        
+        <div id="click-area">
+            <button id="click-button"></button>
+            <div class="cps-display">Кликов в секунду: <span id="cps-value">0</span></div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="generators">ГЕНЕРАТОРЫ</div>
+            <div class="tab" data-tab="upgrades">УЛУЧШЕНИЯ</div>
+            <div class="tab" data-tab="prestige">ПРЕСТИЖ</div>
+        </div>
+        
+        <div id="generators" class="tab-content active">
+            <!-- Генераторы будут добавлены через JS -->
+        </div>
+        
+        <div id="upgrades" class="tab-content">
+            <!-- Улучшения будут добавлены через JS -->
+        </div>
+        
+        <div id="prestige" class="tab-content">
+            <div class="pixel-border">
+                <h3>СИСТЕМА ПРЕСТИЖА</h3>
+                <p>Текущий бонус: <span id="prestige-bonus">0%</span></p>
+                <p>Кристаллов за престиж: <span id="prestige-crystals">0</span></p>
+                <button id="prestige-button" disabled>ПРЕСТИЖ (требуется 1,000,000 кликов)</button>
+                <p><small>При престиже вы потеряете все клики и улучшения, но получите кристаллы для постоянных бонусов</small></p>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Инициализация Web App Telegram
+        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрыть Web App на весь экран
-        tg.MainButton.hide(); // Скрыть основную кнопку (пока не нужна)
-
-        // Получаем элементы DOM
-        const scoreElement = document.getElementById('score');
-        const clickButton = document.getElementById('clickButton');
-
-        // Начальный счет (попробуем загрузить из localStorage)
-        let score = parseInt(localStorage.getItem('clickerScore')) || 0;
-        scoreElement.textContent = score;
-
-        // Обработчик клика по кнопке
-        clickButton.addEventListener('click', () => {
-            score++;
-            scoreElement.textContent = score;
-            localStorage.setItem('clickerScore', score); // Сохраняем в localStorage
-
-            // Опционально: Отправить данные боту (например, при каждом клике или по кнопке "Сохранить")
-            // tg.sendData(JSON.stringify({score: score})); // Раскомментируй, если нужно
-        });
-
-        // Опционально: Кнопка для отправки результата боту
-        // tg.MainButton.setText("Сохранить счет");
-        // tg.MainButton.show();
-        // tg.MainButton.onClick(() => {
-        //     tg.sendData(JSON.stringify({action: 'save_score', score: score}));
-        //     tg.close(); // Закрыть Web App после отправки
-        // });
-
-        // Обработчик события получения данных ОТ БОТА (если нужно)
-        tg.onEvent('mainButtonClicked', function() {
-            console.log('MainButton clicked');
-        });
+        tg.expand();
+        tg.MainButton.hide();
+        
+        // Состояние игры
+        let gameState = {
+            clicks: 0,
+            crystals: 0,
+            prestige: 0,
+            cps: 0,
+            generators: [
+                { id: 1, name: "Помощник", level: 0, baseCPS: 0.1, baseCost: 15, icon: "👨‍💼" },
+                { id: 2, name: "Ферма", level: 0, baseCPS: 0.5, baseCost: 100, icon: "🌾" },
+                { id: 3, name: "Фабрика", level: 0, baseCPS: 2, baseCost: 500, icon: "🏭" },
+                { id: 4, name: "Лаборатория", level: 0, baseCPS: 10, baseCost: 3000, icon: "🔬" },
+                { id: 5, name: "Квантовый компьютер", level: 0, baseCPS: 50, baseCost: 20000, icon: "💻" }
+            ],
+            upgrades: [
+                { id: 1, name: "Улучшенный курсор", description: "+0.1 клика за клик", level: 0, maxLevel: 10, baseCost: 100, effect: 0.1, type: "click" },
+                { id: 2, name: "Автокликер", description: "+0.01 КВС всем генераторам", level: 0, maxLevel: 5, baseCost: 500, effect: 0.01, type: "cps" },
+                { id: 3, name: "Золотая рука", description: "Шанс 5% на двойной клик", level: 0, maxLevel: 3, baseCost: 2000, effect: 5, type: "critical" }
+            ],
+            clickPower: 1,
+            criticalChance: 0
+        };
+        
+        // Инициализация игры
+        function initGame() {
+            loadGame();
+            renderGame();
+            setupEventListeners();
+            
+            // Автоматическое начисление кликов
+            setInterval(() => {
+                gameState.clicks += gameState.cps / 10;
+                updateDisplays();
+                saveGame();
+            }, 100);
+        }
+        
+        // Расчет стоимости генератора
+        function getGeneratorCost(generator) {
+            return Math.floor(generator.baseCost * Math.pow(1.15, generator.level));
+        }
+        
+        // Расчет стоимости улучшения
+        function getUpgradeCost(upgrade) {
+            return Math.floor(upgrade.baseCost * Math.pow(2, upgrade.level));
+        }
+        
+        // Расчет общего CPS
+        function calculateCPS() {
+            let totalCPS = 0;
+            
+            // CPS от генераторов
+            gameState.generators.forEach(generator => {
+                totalCPS += generator.level * generator.baseCPS * (1 + gameState.upgrades[1].level * gameState.upgrades[1].effect);
+            });
+            
+            return totalCPS;
+        }
+        
+        // Обновление интерфейса
+        function renderGame() {
+            updateDisplays();
+            renderGenerators();
+            renderUpgrades();
+            renderPrestige();
+        }
+        
+        // Обновление цифровых значений
+        function updateDisplays() {
+            gameState.cps = calculateCPS();
+            
+            document.getElementById('clicks-display').textContent = formatNumber(gameState.clicks);
+            document.getElementById('crystals-display').textContent = gameState.crystals;
+            document.getElementById('cps-value').textContent = formatNumber(gameState.cps);
+        }
+        
+        // Форматирование чисел
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return Math.floor(num);
+        }
+        
+        // Отрисовка генераторов
+        function renderGenerators() {
+            const container = document.getElementById('generators');
+            container.innerHTML = '';
+            
+            gameState.generators.forEach(generator => {
+                const cost = getGeneratorCost(generator);
+                const generatorElement = document.createElement('div');
+                generatorElement.className = 'generator';
+                generatorElement.innerHTML = `
+                    <div class="generator-icon">${generator.icon}</div>
+                    <div class="generator-info">
+                        <div class="generator-name">${generator.name} [${generator.level}]</div>
+                        <div class="generator-cps">${generator.baseCPS * generator.level} КВС</div>
+                    </div>
+                    <div class="generator-cost">${formatNumber(cost)}</div>
+                `;
+                
+                generatorElement.addEventListener('click', () => buyGenerator(generator.id));
+                if (gameState.clicks < cost) generatorElement.style.opacity = '0.5';
+                
+                container.appendChild(generatorElement);
+            });
+        }
+        
+        // Отрисовка улучшений
+        function renderUpgrades() {
+            const container = document.getElementById('upgrades');
+            container.innerHTML = '';
+            
+            gameState.upgrades.forEach(upgrade => {
+                const cost = getUpgradeCost(upgrade);
+                const upgradeElement = document.createElement('div');
+                upgradeElement.className = 'upgrade';
+                
+                let levelInfo = '';
+                if (upgrade.maxLevel > 1) {
+                    levelInfo = `<div class="upgrade-level">Уровень ${upgrade.level}/${upgrade.maxLevel}</div>`;
+                }
+                
+                upgradeElement.innerHTML = `
+                    <div class="upgrade-info">
+                        <strong>${upgrade.name}</strong>
+                        <div>${upgrade.description}</div>
+                        ${levelInfo}
+                    </div>
+                    <div class="upgrade-price">${formatNumber(cost)}</div>
+                `;
+                
+                if (upgrade.level < upgrade.maxLevel && gameState.clicks >= cost) {
+                    upgradeElement.addEventListener('click', () => buyUpgrade(upgrade.id));
+                } else {
+                    upgradeElement.style.opacity = '0.5';
+                }
+                
+                container.appendChild(upgradeElement);
+            });
+        }
+        
+        // Отрисовка престижа
+        function renderPrestige() {
+            const crystals = Math.floor(Math.sqrt(gameState.clicks / 100000));
+            document.getElementById('prestige-crystals').textContent = crystals;
+            document.getElementById('prestige-bonus').textContent = `${gameState.prestige * 5}%`;
+            
+            const prestigeButton = document.getElementById('prestige-button');
+            prestigeButton.disabled = gameState.clicks < 1000000;
+            
+            if (!prestigeButton.onclick) {
+                prestigeButton.addEventListener('click', doPrestige);
+            }
+        }
+        
+        // Покупка генератора
+        function buyGenerator(id) {
+            const generator = gameState.generators.find(g => g.id === id);
+            const cost = getGeneratorCost(generator);
+            
+            if (gameState.clicks >= cost) {
+                gameState.clicks -= cost;
+                generator.level++;
+                renderGame();
+            }
+        }
+        
+        // Покупка улучшения
+        function buyUpgrade(id) {
+            const upgrade = gameState.upgrades.find(u => u.id === id);
+            const cost = getUpgradeCost(upgrade);
+            
+            if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
+                gameState.clicks -= cost;
+                upgrade.level++;
+                
+                // Применение эффекта
+                if (upgrade.type === "click") {
+                    gameState.clickPower += upgrade.effect;
+                } else if (upgrade.type === "critical") {
+                    gameState.criticalChance += upgrade.effect;
+                }
+                
+                renderGame();
+            }
+        }
+        
+        // Престиж
+        function doPrestige() {
+            if (gameState.clicks < 1000000) return;
+            
+            const crystals = Math.floor(Math.sqrt(gameState.clicks / 100000));
+            gameState.crystals += crystals;
+            gameState.prestige++;
+            
+            // Сброс состояния
+            gameState.clicks = 0;
+            gameState.generators.forEach(g => g.level = 0);
+            gameState.upgrades.forEach(u => u.level = 0);
+            gameState.clickPower = 1;
+            gameState.criticalChance = 0;
+            
+            renderGame();
+            saveGame();
+        }
+        
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Клик по основной кнопке
+            document.getElementById('click-button').addEventListener('click', () => {
+                let clickValue = gameState.clickPower;
+                
+                // Проверка на критический клик
+                if (Math.random() * 100 < gameState.criticalChance) {
+                    clickValue *= 2;
+                    // Здесь можно добавить визуальный эффект
+                }
+                
+                gameState.clicks += clickValue;
+                updateDisplays();
+            });
+            
+            // Переключение вкладок
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+        }
+        
+        // Сохранение игры
+        function saveGame() {
+            localStorage.setItem('pixelClickerSave', JSON.stringify(gameState));
+        }
+        
+        // Загрузка игры
+        function loadGame() {
+            const saved = localStorage.getItem('pixelClickerSave');
+            if (saved) {
+                gameState = JSON.parse(saved);
+            }
+        }
+        
+        // Запуск игры
+        initGame();
     </script>
 </body>
 </html>
