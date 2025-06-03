@@ -282,7 +282,7 @@
             100% { transform: translate(0, -150px) scale(2.5); opacity: 0; }
         }
         
-        .minigame-content {
+        .minigame-container {
             text-align: center;
             padding: 20px;
         }
@@ -543,7 +543,7 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
         
-        .minigame-wrapper {
+        .minigame-container {
             display: none;
             padding: 15px;
             background: rgba(0, 0, 0, 0.3);
@@ -551,7 +551,7 @@
             margin-top: 10px;
         }
         
-        .minigame-wrapper.active {
+        .minigame-container.active {
             display: block;
             animation: fadeIn 0.5s;
         }
@@ -699,6 +699,29 @@
             from { transform: scale(1); }
             to { transform: scale(1.1); }
         }
+        
+        /* Большая кнопка для мини-игры "Быстрые клики" */
+        #minigame2-button {
+            width: 180px;
+            height: 180px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="%23ff5555"/></svg>') center/cover;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            transition: transform 0.1s, box-shadow 0.2s;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 85, 85, 0.5);
+            display: none; /* Сначала скрыта */
+            margin: 0 auto; /* Центрирование */
+        }
+        
+        #minigame2-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 30px rgba(255, 85, 85, 0.8);
+        }
     </style>
 </head>
 <body>
@@ -760,59 +783,57 @@
         </div>
         
         <div id="minigame" class="tab-content">
-            <div class="minigame-wrapper active">
-                <div class="minigame-selector">
-                    <button class="minigame-btn active" data-minigame="1">УДАР ПО МИШЕНИ</button>
-                    <button class="minigame-btn" data-minigame="2">БЫСТРЫЕ КЛИКИ</button>
-                    <button class="minigame-btn" data-minigame="3">ПАДАЮЩИЕ ЗВЕЗДЫ</button>
-                </div>
-                
-                <div id="minigame1" class="minigame-content active">
-                    <div class="minigame-header">
-                        <h3>УДАРЬ ПО МИШЕНИ!</h3>
-                        <div class="minigame-stats">
-                            <div>Время: <span id="minigame-timer">30</span> сек</div>
-                            <div>Мишени: <span id="minigame-score">0</span></div>
-                        </div>
-                    </div>
-                    <p>За каждую мишень: <strong>+<span id="minigame-reward">1</span> кристалл</strong></p>
-                    <div id="minigame-area" style="position:relative; height:250px; margin-top:20px; display:none;"></div>
-                    <div class="minigame-controls">
-                        <button id="minigame-start">НАЧАТЬ ИГРУ</button>
+            <div class="minigame-selector">
+                <button class="minigame-btn active" data-minigame="1">УДАР ПО МИШЕНИ</button>
+                <button class="minigame-btn" data-minigame="2">БЫСТРЫЕ КЛИКИ</button>
+                <button class="minigame-btn" data-minigame="3">ПАДАЮЩИЕ ЗВЕЗДЫ</button>
+            </div>
+            
+            <div id="minigame1" class="minigame-container">
+                <div class="minigame-header">
+                    <h3>УДАРЬ ПО МИШЕНИ!</h3>
+                    <div class="minigame-stats">
+                        <div>Время: <span id="minigame-timer">30</span> сек</div>
+                        <div>Мишени: <span id="minigame-score">0</span></div>
                     </div>
                 </div>
-                
-                <div id="minigame2" class="minigame-content">
-                    <div class="minigame-header">
-                        <h3>БЫСТРЫЕ КЛИКИ!</h3>
-                        <div class="minigame-stats">
-                            <div>Время: <span id="minigame2-timer">10</span> сек</div>
-                            <div>Кликов: <span id="minigame2-score">0</span></div>
-                        </div>
-                    </div>
-                    <p>Кликните как можно больше раз за 10 секунд</p>
-                    <div id="minigame2-area">
-                        <button id="minigame2-button" style="display:none;">КЛИКАЙ!</button>
-                    </div>
-                    <div class="minigame-controls">
-                        <button id="minigame2-start">НАЧАТЬ ИГРУ</button>
+                <p>За каждую мишень: <strong>+<span id="minigame-reward">1</span> кристалл</strong></p>
+                <div id="minigame-area" style="position:relative; height:250px; margin-top:20px; display:none;"></div>
+                <div class="minigame-controls">
+                    <button id="minigame-start">НАЧАТЬ ИГРУ</button>
+                </div>
+            </div>
+            
+            <div id="minigame2" class="minigame-container">
+                <div class="minigame-header">
+                    <h3>БЫСТРЫЕ КЛИКИ!</h3>
+                    <div class="minigame-stats">
+                        <div>Время: <span id="minigame2-timer">10</span> сек</div>
+                        <div>Кликов: <span id="minigame2-score">0</span></div>
                     </div>
                 </div>
-                
-                <div id="minigame3" class="minigame-content">
-                    <div class="minigame-header">
-                        <h3>ПАДАЮЩИЕ ЗВЕЗДЫ!</h3>
-                        <div class="minigame-stats">
-                            <div>Время: <span id="minigame3-timer">20</span> сек</div>
-                            <div>Звезд: <span id="minigame3-score">0</span></div>
-                        </div>
-                    </div>
-                    <p>Кликните по звезде до того, как она исчезнет</p>
-                    <div class="minigame-controls">
-                        <button id="minigame3-start">НАЧАТЬ ИГРУ</button>
-                    </div>
-                    <div id="minigame3-area" style="position:relative; height:250px; margin-top:20px; display:none;"></div>
+                <p>Кликните как можно больше раз за 10 секунд</p>
+                <div id="minigame2-area" style="text-align: center;">
+                    <button id="minigame2-button">КЛИКАЙ!</button>
                 </div>
+                <div class="minigame-controls">
+                    <button id="minigame2-start">НАЧАТЬ ИГРУ</button>
+                </div>
+            </div>
+            
+            <div id="minigame3" class="minigame-container">
+                <div class="minigame-header">
+                    <h3>ПАДАЮЩИЕ ЗВЕЗДЫ!</h3>
+                    <div class="minigame-stats">
+                        <div>Время: <span id="minigame3-timer">20</span> сек</div>
+                        <div>Звезд: <span id="minigame3-score">0</span></div>
+                    </div>
+                </div>
+                <p>Кликните по звезде до того, как она исчезнет</p>
+                <div class="minigame-controls">
+                    <button id="minigame3-start">НАЧАТЬ ИГРУ</button>
+                </div>
+                <div id="minigame3-area" style="position:relative; height:250px; margin-top:20px; display:none;"></div>
             </div>
         </div>
         
@@ -2118,7 +2139,7 @@
                     this.classList.add('active');
                     
                     // Показываем выбранную мини-игру
-                    document.querySelectorAll('.minigame-content').forEach(container => {
+                    document.querySelectorAll('.minigame-container').forEach(container => {
                         container.classList.remove('active');
                     });
                     document.getElementById(`minigame${minigameId}`).classList.add('active');
