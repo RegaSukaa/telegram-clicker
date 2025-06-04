@@ -6,6 +6,7 @@
     <title>Pixel Clicker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* Все стили остаются без изменений */
         :root {
             --pixel-size: 4px;
             --color-primary: #6a5acd;
@@ -1308,6 +1309,9 @@
                 const cost = getGeneratorCost(generator);
                 const generatorElement = document.createElement('div');
                 generatorElement.className = 'generator';
+                if (gameState.clicks >= cost && generator.level < 100) {
+                    generatorElement.classList.add('available');
+                }
                 generatorElement.innerHTML = `
                     <div class="generator-icon">${generator.icon}</div>
                     <div class="generator-info">
@@ -1320,9 +1324,6 @@
                 generatorElement.addEventListener('click', () => buyGenerator(generator.id));
                 container.appendChild(generatorElement);
             });
-            
-            // Обновляем состояния кнопок после рендеринга
-            updateButtonStates();
         }
         
         // Отрисовка улучшений
@@ -1334,6 +1335,9 @@
                 const cost = getUpgradeCost(upgrade);
                 const upgradeElement = document.createElement('div');
                 upgradeElement.className = 'upgrade';
+                if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
+                    upgradeElement.classList.add('available');
+                }
                 
                 let levelInfo = '';
                 if (upgrade.maxLevel > 1) {
@@ -1355,9 +1359,6 @@
                 
                 container.appendChild(upgradeElement);
             });
-            
-            // Обновляем состояния кнопок после рендеринга
-            updateButtonStates();
         }
         
         // Отрисовка достижений
@@ -1522,32 +1523,26 @@
         // Обновление состояний кнопок
         function updateButtonStates() {
             // Обновляем генераторы
-            const generatorElements = document.querySelectorAll('#generators .generator');
-            gameState.generators.forEach((generator, index) => {
-                if (index < generatorElements.length) {
-                    const cost = getGeneratorCost(generator);
-                    const element = generatorElements[index];
-                    
-                    if (gameState.clicks >= cost && generator.level < 100) {
-                        element.classList.add('available');
-                    } else {
-                        element.classList.remove('available');
-                    }
+            document.querySelectorAll('#generators .generator').forEach((element, index) => {
+                const generator = gameState.generators[index];
+                const cost = getGeneratorCost(generator);
+                
+                if (gameState.clicks >= cost && generator.level < 100) {
+                    element.classList.add('available');
+                } else {
+                    element.classList.remove('available');
                 }
             });
             
             // Обновляем улучшения
-            const upgradeElements = document.querySelectorAll('#upgrades .upgrade');
-            gameState.upgrades.forEach((upgrade, index) => {
-                if (index < upgradeElements.length) {
-                    const cost = getUpgradeCost(upgrade);
-                    const element = upgradeElements[index];
-                    
-                    if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
-                        element.classList.add('available');
-                    } else {
-                        element.classList.remove('available');
-                    }
+            document.querySelectorAll('#upgrades .upgrade').forEach((element, index) => {
+                const upgrade = gameState.upgrades[index];
+                const cost = getUpgradeCost(upgrade);
+                
+                if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
+                    element.classList.add('available');
+                } else {
+                    element.classList.remove('available');
                 }
             });
         }
