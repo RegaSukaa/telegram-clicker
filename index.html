@@ -1296,7 +1296,6 @@
             if (num >= 1000000000) return (num / 1000000000).toFixed(2) + 'B';
             if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            if (num < 10) return num.toFixed(2);
             return Math.floor(num);
         }
         
@@ -1321,6 +1320,9 @@
                 generatorElement.addEventListener('click', () => buyGenerator(generator.id));
                 container.appendChild(generatorElement);
             });
+            
+            // Обновляем состояния кнопок после рендеринга
+            updateButtonStates();
         }
         
         // Отрисовка улучшений
@@ -1353,6 +1355,9 @@
                 
                 container.appendChild(upgradeElement);
             });
+            
+            // Обновляем состояния кнопок после рендеринга
+            updateButtonStates();
         }
         
         // Отрисовка достижений
@@ -1517,26 +1522,32 @@
         // Обновление состояний кнопок
         function updateButtonStates() {
             // Обновляем генераторы
-            document.querySelectorAll('#generators .generator').forEach((element, index) => {
-                const generator = gameState.generators[index];
-                const cost = getGeneratorCost(generator);
-                
-                if (gameState.clicks >= cost && generator.level < 100) {
-                    element.classList.add('available');
-                } else {
-                    element.classList.remove('available');
+            const generatorElements = document.querySelectorAll('#generators .generator');
+            gameState.generators.forEach((generator, index) => {
+                if (index < generatorElements.length) {
+                    const cost = getGeneratorCost(generator);
+                    const element = generatorElements[index];
+                    
+                    if (gameState.clicks >= cost && generator.level < 100) {
+                        element.classList.add('available');
+                    } else {
+                        element.classList.remove('available');
+                    }
                 }
             });
             
             // Обновляем улучшения
-            document.querySelectorAll('#upgrades .upgrade').forEach((element, index) => {
-                const upgrade = gameState.upgrades[index];
-                const cost = getUpgradeCost(upgrade);
-                
-                if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
-                    element.classList.add('available');
-                } else {
-                    element.classList.remove('available');
+            const upgradeElements = document.querySelectorAll('#upgrades .upgrade');
+            gameState.upgrades.forEach((upgrade, index) => {
+                if (index < upgradeElements.length) {
+                    const cost = getUpgradeCost(upgrade);
+                    const element = upgradeElements[index];
+                    
+                    if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
+                        element.classList.add('available');
+                    } else {
+                        element.classList.remove('available');
+                    }
                 }
             });
         }
@@ -1556,15 +1567,23 @@
                 gameState.clicks -= cost;
                 generator.level++;
                 
-                // Перерисовываем генераторы, чтобы обновить уровень и стоимость
+                // Перерисовываем генераторы
                 renderGenerators();
                 
+                // Обновляем CPS
                 updateCPS();
+                
+                // Обновляем отображение
                 updateDisplays();
-                updateButtonStates();
+                
+                // Проверяем достижения и квесты
                 checkAchievements();
                 checkQuests();
+                
+                // Проигрываем звук
                 if (gameState.soundEnabled) purchaseSound.play().catch(e => console.log("Audio error:", e));
+                
+                // Сохраняем игру
                 saveGame();
             }
         }
@@ -1578,7 +1597,7 @@
                 gameState.clicks -= cost;
                 upgrade.level++;
                 
-                // Перерисовываем улучшения, чтобы обновить уровень и стоимость
+                // Перерисовываем улучшения
                 renderUpgrades();
                 
                 // Применение эффекта
@@ -1606,12 +1625,20 @@
                         break;
                 }
                 
+                // Обновляем CPS
                 updateCPS();
+                
+                // Обновляем отображение
                 updateDisplays();
-                updateButtonStates();
+                
+                // Проверяем достижения и квесты
                 checkAchievements();
                 checkQuests();
+                
+                // Проигрываем звук
                 if (gameState.soundEnabled) purchaseSound.play().catch(e => console.log("Audio error:", e));
+                
+                // Сохраняем игру
                 saveGame();
             }
         }
