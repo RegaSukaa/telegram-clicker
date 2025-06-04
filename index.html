@@ -6,7 +6,6 @@
     <title>Pixel Clicker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Все стили остаются без изменений */
         :root {
             --pixel-size: 4px;
             --color-primary: #6a5acd;
@@ -1086,6 +1085,7 @@
         let minigame3Interval;
         let lastAchievementNotification = 0;
         let cloudInterval;
+        let saveCounter = 0;
         
         // Аудио элементы
         const clickSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3');
@@ -1124,13 +1124,19 @@
             
             // Автоматическое начисление кликов от генераторов
             setInterval(() => {
-                if (gameState.generatorCPS > 0) {
-                    const generatedClicks = gameState.generatorCPS / 10;
+                const currentCPS = calculateGeneratorCPS();
+                if (currentCPS > 0) {
+                    const generatedClicks = currentCPS / 10;
                     gameState.clicks += generatedClicks;
                     gameState.totalClicks += generatedClicks;
                     updateXp(generatedClicks);
                     updateDisplays();
-                    saveGame();
+                    
+                    saveCounter++;
+                    if (saveCounter >= 10) {
+                        saveGame();
+                        saveCounter = 0;
+                    }
                 }
             }, 100);
             
@@ -1140,6 +1146,9 @@
                 updateCriticalBar();
                 updateButtonStates();
             }, 500);
+            
+            // Автосохранение каждые 5 секунд
+            setInterval(saveGame, 5000);
         }
         
         // Создание облаков для фона
@@ -1309,9 +1318,6 @@
                 const cost = getGeneratorCost(generator);
                 const generatorElement = document.createElement('div');
                 generatorElement.className = 'generator';
-                if (gameState.clicks >= cost && generator.level < 100) {
-                    generatorElement.classList.add('available');
-                }
                 generatorElement.innerHTML = `
                     <div class="generator-icon">${generator.icon}</div>
                     <div class="generator-info">
@@ -1324,6 +1330,9 @@
                 generatorElement.addEventListener('click', () => buyGenerator(generator.id));
                 container.appendChild(generatorElement);
             });
+            
+            // Принудительное обновление кнопок после рендера
+            updateButtonStates();
         }
         
         // Отрисовка улучшений
@@ -1335,9 +1344,6 @@
                 const cost = getUpgradeCost(upgrade);
                 const upgradeElement = document.createElement('div');
                 upgradeElement.className = 'upgrade';
-                if (gameState.clicks >= cost && upgrade.level < upgrade.maxLevel) {
-                    upgradeElement.classList.add('available');
-                }
                 
                 let levelInfo = '';
                 if (upgrade.maxLevel > 1) {
@@ -1359,6 +1365,9 @@
                 
                 container.appendChild(upgradeElement);
             });
+            
+            // Принудительное обновление кнопок после рендера
+            updateButtonStates();
         }
         
         // Отрисовка достижений
@@ -1527,7 +1536,7 @@
                 const generator = gameState.generators[index];
                 const cost = getGeneratorCost(generator);
                 
-                if (gameState.clicks >= cost && generator.level < 100) {
+                if (gameState.clicks >= cost) {
                     element.classList.add('available');
                 } else {
                     element.classList.remove('available');
@@ -1562,23 +1571,19 @@
                 gameState.clicks -= cost;
                 generator.level++;
                 
-                // Перерисовываем генераторы
-                renderGenerators();
+                // Анимация покупки
+                const generatorElement = document.querySelectorAll('#generators .generator')[id-1];
+                generatorElement.classList.add('purchase-animation');
+                setTimeout(() => {
+                    generatorElement.classList.remove('purchase-animation');
+                }, 500);
                 
-                // Обновляем CPS
                 updateCPS();
-                
-                // Обновляем отображение
                 updateDisplays();
-                
-                // Проверяем достижения и квесты
+                updateButtonStates();
                 checkAchievements();
                 checkQuests();
-                
-                // Проигрываем звук
                 if (gameState.soundEnabled) purchaseSound.play().catch(e => console.log("Audio error:", e));
-                
-                // Сохраняем игру
                 saveGame();
             }
         }
@@ -1592,8 +1597,12 @@
                 gameState.clicks -= cost;
                 upgrade.level++;
                 
-                // Перерисовываем улучшения
-                renderUpgrades();
+                // Анимация покупки
+                const upgradeElement = document.querySelectorAll('#upgrades .upgrade')[id-1];
+                upgradeElement.classList.add('purchase-animation');
+                setTimeout(() => {
+                    upgradeElement.classList.remove('purchase-animation');
+                }, 500);
                 
                 // Применение эффекта
                 switch (upgrade.type) {
@@ -1620,20 +1629,12 @@
                         break;
                 }
                 
-                // Обновляем CPS
                 updateCPS();
-                
-                // Обновляем отображение
                 updateDisplays();
-                
-                // Проверяем достижения и квесты
+                updateButtonStates();
                 checkAchievements();
                 checkQuests();
-                
-                // Проигрываем звук
                 if (gameState.soundEnabled) purchaseSound.play().catch(e => console.log("Audio error:", e));
-                
-                // Сохраняем игру
                 saveGame();
             }
         }
