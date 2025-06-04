@@ -1296,6 +1296,7 @@
             if (num >= 1000000000) return (num / 1000000000).toFixed(2) + 'B';
             if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            if (num < 10) return num.toFixed(2);
             return Math.floor(num);
         }
         
@@ -1555,12 +1556,8 @@
                 gameState.clicks -= cost;
                 generator.level++;
                 
-                // Анимация покупки
-                const generatorElement = document.querySelectorAll('#generators .generator')[id-1];
-                generatorElement.classList.add('purchase-animation');
-                setTimeout(() => {
-                    generatorElement.classList.remove('purchase-animation');
-                }, 500);
+                // Перерисовываем генераторы, чтобы обновить уровень и стоимость
+                renderGenerators();
                 
                 updateCPS();
                 updateDisplays();
@@ -1581,12 +1578,8 @@
                 gameState.clicks -= cost;
                 upgrade.level++;
                 
-                // Анимация покупки
-                const upgradeElement = document.querySelectorAll('#upgrades .upgrade')[id-1];
-                upgradeElement.classList.add('purchase-animation');
-                setTimeout(() => {
-                    upgradeElement.classList.remove('purchase-animation');
-                }, 500);
+                // Перерисовываем улучшения, чтобы обновить уровень и стоимость
+                renderUpgrades();
                 
                 // Применение эффекта
                 switch (upgrade.type) {
